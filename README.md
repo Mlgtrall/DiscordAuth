@@ -1,0 +1,1 @@
+#bungee-discord-bot-auth
