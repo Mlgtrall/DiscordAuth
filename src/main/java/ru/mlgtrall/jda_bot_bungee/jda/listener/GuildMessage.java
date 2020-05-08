@@ -41,7 +41,7 @@ public class GuildMessage extends ListenerAdapter {
 
         final TextChannel channel = e.getChannel();
 
-        if(!botAssembler.getBotChannels().contains(channel.getId()))return; // listening only channel "bots"
+        if(!botAssembler.getBotChannels().contains(channel.getId()))return; // listening only needed channels
 
         final String arg = e.getMessage().getContentRaw();
         final String[] args = arg.split(" "); // r!command arg arg arg ...
@@ -59,7 +59,7 @@ public class GuildMessage extends ListenerAdapter {
         }
 
         if(args[0].contains(prefix) && args[0].contains(Objects.requireNonNull(auth_command))
-                && memberHasRequiredRole){  //Проверка на роль и правильность команды
+                && memberHasRequiredRole){  //Check for required roles and if command valid
 
             if(args.length != 2) {
                 channel.sendMessage(JDAConfigUtils.fromConfig("dis_wrong_args")).queue(); //.queue

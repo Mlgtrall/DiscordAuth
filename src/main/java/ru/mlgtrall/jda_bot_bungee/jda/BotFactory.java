@@ -113,6 +113,7 @@ public class BotFactory {
         jda.addEventListener(new GuildMessage(pl,this));
         pl.getLogger().info("Done!");
 
+        //JDA Style starting
         /*try {
             jda = new JDABuilder(AccountType.BOT)
                     .setToken(jdaUtils.fromConfig("TOKEN"))

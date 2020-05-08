@@ -55,7 +55,7 @@ public class AuthCommand extends Command {
 
         Map<String, String> nameCodeMap = plugin.getNameCodeMap();
         
-        //Проверка на валидность кода
+        //Check if code valid
         String actualcode = nameCodeMap.get(playerName);
         assert actualcode != null;
 
@@ -89,11 +89,11 @@ public class AuthCommand extends Command {
         nameCodeMap.remove(playerName);
         nameMineIdDiscordMap.remove(playerName);
 
-        //Сообщение об удачной аутентификации
+        //Message about successful auth
         player.sendMessage(ChatManager.fromConfig("done_auth", true));
         target.getUser().openPrivateChannel().complete().sendMessage(JDAConfigUtils.fromConfig("done_auth")).queue();
 
-        //Сообщение о необходимой регистрации
+        //Message about registration in minecraft
         TitleManager.send(player, ChatManager.fromConfigRaw("title_reg"));
         player.sendMessage(ChatManager.fromConfig("join_2", true));
 

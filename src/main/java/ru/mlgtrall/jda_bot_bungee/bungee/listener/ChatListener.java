@@ -40,20 +40,14 @@ public class ChatListener implements Listener {
 
         if(verifiedMembers.contains(uuid)) return;
 
-        //Проверка на команду
+        //Check if message is command
         if(!event.isCommand() && !event.isProxyCommand()){
 
             player.sendMessage(ChatManager.fromConfig("not_command",true));
             event.setCancelled(true);
-            //Добавить проверку в базе данных
             triesCounter(event);
             return;
         }
-
-        /*if(message.contains("/kick")){
-            player.disconnect(new TextComponent(ChatColor.RED + "Вы были кикнуты"));
-            return;
-        }*/
 
         if(message.contains("/authme") || message.contains("/reg") || message.contains("/login") || message.contains("/r") || message.contains("/l")){
             triesCounter(event);
