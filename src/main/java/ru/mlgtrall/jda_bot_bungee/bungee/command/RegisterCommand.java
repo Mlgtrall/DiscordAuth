@@ -21,11 +21,9 @@ import java.util.UUID;
 
 public class RegisterCommand extends Command {
     Main plugin;
-    //ChatManager chatManager;
     public RegisterCommand(@NotNull Main plugin){
         super("reg","","r");
         this.plugin = plugin;
-        //this.chatManager = plugin.getChatManager();
     }
 
     @Override
@@ -62,31 +60,6 @@ public class RegisterCommand extends Command {
             TitleManager.send(player, ChatManager.fromConfigRaw("title_reg"));
             return;
         }
-
-//        //Allow only allowed symbols for password
-//        for(char c : args[0].toCharArray()){
-//            if(!(c >= 'a' && c<= 'z' || c>= 'A' && c<= 'Z' || c>= '0' && c<='9' || c == '_')){
-//                player.sendMessage(ChatManager.fromConfig("password_incorrect_char",true));
-//                TitleManager.send(player, ChatManager.fromConfigRaw("title_reg"));
-//                return;
-//            }
-//        }
-//
-//        //Allow only less than max length
-//        if(args[0].length()>32){
-//            player.sendMessage(ChatManager.fromConfig("password_too_long", true));
-//            //player.sendMessage(chatUtils.fromConfig("join_2"));
-//            TitleManager.send(player, ChatManager.fromConfigRaw("title_reg"));
-//            return;
-//        }
-//
-//        //Allow only more than min length
-//        if(args[0].length()<6){
-//            player.sendMessage(ChatManager.fromConfig("password_too_small", true));
-//            //player.sendMessage(chatUtils.fromConfig("join_2"));
-//            TitleManager.send(player, ChatManager.fromConfigRaw("title_reg"));
-//            return;
-//        }
 
         String password = Password.checkIfValid(args[0], player);
         if(password == null) return;

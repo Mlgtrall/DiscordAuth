@@ -28,7 +28,7 @@ public class ConfigFile{
         if(folderPath == null){
             this.dataFolder = plugin.getDataFolder();
         }else {
-            this.dataFolder = new File(plugin.getDataFolder().getPath() + File.separator + folderPath);
+            this.dataFolder = new File(plugin.getDataFolder().getPath() + File.pathSeparator + folderPath);
         }
         load();
     }

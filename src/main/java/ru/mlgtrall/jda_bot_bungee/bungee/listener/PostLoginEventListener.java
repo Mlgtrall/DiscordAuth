@@ -140,6 +140,7 @@ public class PostLoginEventListener implements Listener {
 //            verifiedmembers.remove(player.getUniqueId());
 //            return;
 //        }
+
         if(playerDB.get(YMLKeys.LOGIN_IP.addBeforePath(playerName).addToPath(ip).getPath()) == null){
             logger.info("FALSE");
             verifiedmembers.remove(player.getUniqueId());

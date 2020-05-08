@@ -87,6 +87,10 @@ public final class Main extends Plugin {
         checkDB();
     }
 
+    public static void main(String[] args) {
+
+    }
+
     private void checkDB() {
 
         ConfigFile dbConfigFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
