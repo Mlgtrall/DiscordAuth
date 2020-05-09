@@ -2,11 +2,14 @@ package ru.mlgtrall.jda_bot_bungee.bungee.command;
 
 import net.dv8tion.jda.core.entities.Member;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
+import ru.mlgtrall.jda_bot_bungee.ServersList;
 import ru.mlgtrall.jda_bot_bungee.bungee.connection.Connection;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.CommandUtils;
@@ -33,7 +36,16 @@ public class AuthCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if(CommandUtils.isPlayer(sender))return;
+
         ProxiedPlayer player = (ProxiedPlayer) sender;
+        ServerInfo serverInfo = player.getServer().getInfo();
+
+        //Check for servers
+        if(!ServersList.isAuthorizedServer(serverInfo.getName())) return;
+        if(!ServersList.isLogin(serverInfo.getName())){
+            player.sendMessage(new TextComponent("Вы уже авторизованы!"));
+            return;
+        }
 
         FileLoader fileLoader = plugin.getFileLoader();
         ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);

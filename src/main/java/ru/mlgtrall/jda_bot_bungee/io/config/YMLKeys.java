@@ -43,12 +43,19 @@ public enum YMLKeys {
     }
 
     public @NotNull String getPath(){
-        return this.fullPath;
+        String result = fullPath;
+        fullPath = asPath;
+        return result;
     }
 
     public YMLKeys addBeforePath(String key){
+        StringBuilder k = new StringBuilder(key);
         if(fullPath.startsWith(".")){
-            fullPath = key + fullPath;
+            if(!key.endsWith(".")){
+                fullPath = key + fullPath;
+            }else{
+                fullPath = k.replace(k.lastIndexOf("."), k.lastIndexOf(".") + 1, "").toString() + fullPath;
+            }
         }else {
             fullPath = key + "." + fullPath;
         }

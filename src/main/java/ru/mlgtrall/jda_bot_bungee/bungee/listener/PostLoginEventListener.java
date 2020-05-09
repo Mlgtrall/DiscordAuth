@@ -34,14 +34,21 @@ public class PostLoginEventListener implements Listener {
     @EventHandler
     public void onPostLoginEvent(@NotNull final PostLoginEvent event){
 
-        if (!ServersList.isAuthorizedServer(event.getPlayer().getServer().getInfo().getName())) {
-            pl.getLogger().info("getServer() detected not authorized server! | [Debug]");
-            return;
+        try {
+            if (!ServersList.isAuthorizedServer(event.getPlayer().getReconnectServer().getName())) {
+                pl.getLogger().info("getReconnectServer() detected not authorized server! | [Debug]");
+                return;
+            }
+        }catch (NullPointerException ignored){
+            pl.getLogger().info("Reconnect Server is null");
         }
-
-        if(!ServersList.isAuthorizedServer(event.getPlayer().getReconnectServer().getName())){
-            pl.getLogger().info("getReconnectServer() detected not authorized server! | [Debug]");
-            return;
+        try {
+            if (!ServersList.isAuthorizedServer(event.getPlayer().getServer().getInfo().getName())) {
+                pl.getLogger().info("getServer() detected not authorized server! | [Debug]");
+                return;
+            }
+        }catch (NullPointerException ignored){
+            pl.getLogger().info("Server is null");
         }
 
         final ProxiedPlayer player = event.getPlayer();

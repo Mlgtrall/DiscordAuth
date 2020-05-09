@@ -24,9 +24,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class ServerConnectedListener implements Listener {
-    Main plugin;
+    Main pl;
     public ServerConnectedListener(@NotNull final Main plugin){
-        this.plugin = plugin;
+        this.pl = plugin;
 
     }
 
@@ -39,32 +39,33 @@ public class ServerConnectedListener implements Listener {
 //            if(!event.getServer().getInfo().getName().equals(name)) return;
 //        }
 
-        if(!ServersList.isAuthorizedServer(event.getServer().getInfo().getName())) return;
+        if (!ServersList.isAuthorizedServer(event.getServer().getInfo().getName())) return;
+
 
         final ProxiedPlayer player = event.getPlayer();
-        final Map<String, ServerInfo> servers =  plugin.getProxy().getServers();
-        Set<UUID> verifiedMembers = plugin.getVerifiedMembers();
-        TaskScheduler scheduler = plugin.getProxy().getScheduler();
+        final Map<String, ServerInfo> servers =  pl.getProxy().getServers();
+        Set<UUID> verifiedMembers = pl.getVerifiedMembers();
+        TaskScheduler scheduler = pl.getProxy().getScheduler();
 
-        plugin.getLogger().info("ServerConnected event = " + event.toString());
+        pl.getLogger().info("ServerConnected event = " + event.toString());
 
-        FileLoader fileLoader = plugin.getFileLoader();
+        FileLoader fileLoader = pl.getFileLoader();
         ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDataBase = playerDBFile.getConfig();
         final UUID uuid = player.getUniqueId();
         String playerName = player.getName();
 
 
-        scheduler.schedule(plugin, () -> {
+        scheduler.schedule(pl, () -> {
             try {
                 if(!verifiedMembers.contains(uuid) && !servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
-                    plugin.getLogger().info("Player is not in whitelist but on a Main server!");
+                    pl.getLogger().info("Player is not in whitelist but on a Main server!");
                     Connection.tryConnect(player, ServersList.LOGIN.getName());
                     return;
                 }
 
                 if(verifiedMembers.contains(uuid) && servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
-                    plugin.getLogger().info("Player is in whitelist, but in login server!");
+                    pl.getLogger().info("Player is in whitelist, but in login server!");
                     Connection.tryConnect(player);
 
                     return;
@@ -73,35 +74,34 @@ public class ServerConnectedListener implements Listener {
 
                 if(servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
 
-                    scheduler.schedule(plugin, () -> {
+                    scheduler.schedule(pl, () -> {
                         try {
-                            if (plugin.getProxy().getPlayer(uuid).isConnected() && !verifiedMembers.contains(uuid)) {
+                            if (pl.getProxy().getPlayer(uuid).isConnected() && !verifiedMembers.contains(uuid)) {
                                 Connection.kick(player, ChatManager.fromConfig("timeout"));
                             }
                         } catch (NullPointerException ignored){}
                     }, 3, TimeUnit.MINUTES);
 
-
                     if(playerDataBase.contains(YMLKeys.PASSWORD.addBeforePath(playerName).getPath()) ||
                             playerDataBase.contains(YMLKeys.PASSWD_HASH.addBeforePath(playerName).getPath()) &&
                                     playerDataBase.contains(YMLKeys.SALT.addBeforePath(playerName).getPath())) {
-                        scheduler.schedule(plugin, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_login")), 2, TimeUnit.SECONDS);
+                        scheduler.schedule(pl, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_login")), 2, TimeUnit.SECONDS);
                         player.sendMessage(ChatManager.fromConfig("join3"));
                         return;
                     }
 
                     if(playerDataBase.contains(YMLKeys.DISCORD_ID.addBeforePath(playerName).getPath())) {
-                        scheduler.schedule(plugin, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_reg")), 2, TimeUnit.SECONDS);
+                        scheduler.schedule(pl, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_reg")), 2, TimeUnit.SECONDS);
                         player.sendMessage(ChatManager.fromConfig("join_2"));
                     } else {
-                        scheduler.schedule(plugin, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_auth")), 2, TimeUnit.SECONDS);
+                        scheduler.schedule(pl, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_auth")), 2, TimeUnit.SECONDS);
                         player.sendMessage(ChatManager.fromConfig("join"));
                     }
                     return;
                 }
 
                 if (playerDataBase.contains(YMLKeys.LOGIN_IP.addBeforePath(playerName).getPath())){
-                    scheduler.schedule(plugin, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_welcome")), 2, TimeUnit.SECONDS);
+                    scheduler.schedule(pl, () -> TitleManager.send(player, ChatManager.fromConfigRaw("title_welcome")), 2, TimeUnit.SECONDS);
                     //player.sendMessage(chatUtils.fromConfig("by_ip", true));
                 }
 

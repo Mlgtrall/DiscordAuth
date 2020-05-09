@@ -12,6 +12,9 @@ public enum ServersList {
         }
         return false;
     }
+    public static boolean isLogin(String name){
+        return ServersList.LOGIN.getName().equals(name);
+    }
 
     public String getName() {
         return this.name;

@@ -20,14 +20,10 @@ public class ConfigFile{
         load();
     }
 
-    public ConfigFile(@NotNull String fileName, String folderPath){
+    public ConfigFile(@NotNull String fileName, @NotNull String folderPath){
         //this();
         this.fileName = fileName;
-        if(folderPath == null){
-            this.dataFolder = plugin.getDataFolder();
-        }else {
-            this.dataFolder = new File(folderPath);
-        }
+        this.dataFolder = new File(folderPath);
         load();
     }
 
