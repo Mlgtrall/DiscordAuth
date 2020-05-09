@@ -20,9 +20,6 @@ public class PlayerDisconnectListener implements Listener {
         plugin.getLogger().info("Disconnect event = " + event);
 
         plugin.getVerifiedMembers().remove(player.getUniqueId());
-        //plugin.getUuidMineDiscord().remove(player.getUniqueId());
-        //plugin.getUuidCodeMap().remove(player.getUniqueId());
-
 
     }
 }

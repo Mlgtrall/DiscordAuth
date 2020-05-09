@@ -84,7 +84,7 @@ public class RegisterCommand extends Command {
 
 
         //playerDB.set(playerName+".REG_IP." + ip , now.toString());
-        playerDB.set(YMLKeys.REG_IP.addBeforePath(playerName).addToPath(ip).getPath(), now.toString());
+        playerDB.set(YMLKeys.REG_IP.addBeforePath(playerName).getPath(), ip);
         playerDBFile.save();
 
         TitleManager.send(player, ChatManager.fromConfigRaw("title_login"));

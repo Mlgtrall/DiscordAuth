@@ -6,6 +6,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
+import ru.mlgtrall.jda_bot_bungee.ServersList;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class Connection {
     public static void tryConnect(@NotNull ProxiedPlayer player) {
 
 //        String toServerByName = pl.getServersListEnum().get(Main.ServersList.MAIN);
-        String toServerByName = Main.ServersList.MAIN.toString();
+        String toServerByName = ServersList.MAIN.getName();
         ServerInfo server = pl.getProxy().getServers().get(toServerByName);
         UUID uuid = player.getUniqueId();
 

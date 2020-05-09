@@ -11,6 +11,7 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
+import ru.mlgtrall.jda_bot_bungee.ServersList;
 import ru.mlgtrall.jda_bot_bungee.bungee.connection.Connection;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
@@ -23,50 +24,53 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class PostLoginEventListener implements Listener {
-    private final Main plugin;
+    private final Main pl;
     BotFactory botAssembler;
     public PostLoginEventListener(@NotNull final Main plugin) {
-        this.plugin = plugin;
+        this.pl = plugin;
         botAssembler = plugin.getBotAssembler();
     }
 
     @EventHandler
     public void onPostLoginEvent(@NotNull final PostLoginEvent event){
 
+        if (!ServersList.isAuthorizedServer(event.getPlayer().getServer().getInfo().getName())) {
+            pl.getLogger().info("getServer() detected not authorized server! | [Debug]");
+            return;
+        }
+
+        if(!ServersList.isAuthorizedServer(event.getPlayer().getReconnectServer().getName())){
+            pl.getLogger().info("getReconnectServer() detected not authorized server! | [Debug]");
+            return;
+        }
+
         final ProxiedPlayer player = event.getPlayer();
-        Logger logger = plugin.getLogger();
+        Logger logger = pl.getLogger();
         final UUID uuid = player.getUniqueId();
-        FileLoader fileLoader = plugin.getFileLoader();
+        FileLoader fileLoader = pl.getFileLoader();
         ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDB = playerDBFile.getConfig();
-//        final Map<Main.ConfigKeys, String> config_keys =  plugin.getConfigKeys();
         final String playerName = player.getName();
-        List<UUID> verifiedmembers = plugin.getVerifiedMembers();
-
-        //logger.info("Post login event got triggered by " + player.getDisplayName() + " with UUID: " + player.getUniqueId() + " | [DEBUG]");
-        //logger.info("Checking if " + player.getDisplayName() + " in player db | [DEBUG]");
+        Set<UUID> verifiedmembers = pl.getVerifiedMembers();
 
         if(!playerDB.contains(playerName)){
             Connection.kick(player, ChatManager.fromConfig("not_in_whitelist"));
             return;
         }
 
-        //Kick if tech works on
-
-
         //Cancelling deleting from playerDB
-        HashMap<String , Integer> nameTaskIdList = plugin.getNameTaskIdList();
+        HashMap<String , Integer> nameTaskIdList = pl.getNameTaskIdList();
         if(nameTaskIdList.containsKey(playerName)) {
             int taskid = nameTaskIdList.get(playerName);
-            plugin.getProxy().getScheduler().cancel(taskid);
+            pl.getProxy().getScheduler().cancel(taskid);
             nameTaskIdList.remove(playerName);
         }
 
         //Discord Check
         if(playerDB.contains(YMLKeys.DISCORD_ID.addBeforePath(playerName).getPath())){
 
-            JDA jda = plugin.getBotAssembler().getJDA();
-            Guild guild = plugin.getBotAssembler().getGuild();
+            JDA jda = pl.getBotAssembler().getJDA();
+            Guild guild = pl.getBotAssembler().getGuild();
             String userid = playerDB.getString(YMLKeys.DISCORD_ID.addBeforePath(playerName).getPath());
 
             Member member = null;
@@ -122,8 +126,6 @@ public class PostLoginEventListener implements Listener {
             }
         }
 
-
-
         //IP
         String ip = player.getSocketAddress().toString().replaceAll("\\.","_").split(":")[0];
         logger.info("Player yamled ip = " + ip);
@@ -141,14 +143,11 @@ public class PostLoginEventListener implements Listener {
 //            return;
 //        }
 
-        if(playerDB.get(YMLKeys.LOGIN_IP.addBeforePath(playerName).addToPath(ip).getPath()) == null){
-            logger.info("FALSE");
+        if(playerDB.get(YMLKeys.LOGIN_IP.addBeforePath(playerName).getPath()) == null){
             verifiedmembers.remove(player.getUniqueId());
             return;
         }
 
-
-        logger.info("TRUE");
         verifiedmembers.add(player.getUniqueId());
         //plugin.tryConnect(player);
 

@@ -1,7 +1,5 @@
 package ru.mlgtrall.jda_bot_bungee.bungee.listener;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
@@ -11,6 +9,7 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
+import ru.mlgtrall.jda_bot_bungee.ServersList;
 import ru.mlgtrall.jda_bot_bungee.bungee.connection.Connection;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.TitleManager;
@@ -19,8 +18,8 @@ import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
 import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
 import ru.mlgtrall.jda_bot_bungee.io.config.YMLKeys;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -33,10 +32,18 @@ public class ServerConnectedListener implements Listener {
 
     @EventHandler
     public void onServerConnected(@NotNull final ServerConnectedEvent event){
+
+        //Check if connected server in plugin's servers list
+//        for(Main.ServersList server : Main.ServersList.values()){
+//            String name = server.getName();
+//            if(!event.getServer().getInfo().getName().equals(name)) return;
+//        }
+
+        if(!ServersList.isAuthorizedServer(event.getServer().getInfo().getName())) return;
+
         final ProxiedPlayer player = event.getPlayer();
         final Map<String, ServerInfo> servers =  plugin.getProxy().getServers();
-//        final Map<Main.ServersList, String> serversEnum = plugin.getServersListEnum();
-        List<UUID> verifiedMembers = plugin.getVerifiedMembers();
+        Set<UUID> verifiedMembers = plugin.getVerifiedMembers();
         TaskScheduler scheduler = plugin.getProxy().getScheduler();
 
         plugin.getLogger().info("ServerConnected event = " + event.toString());
@@ -50,33 +57,30 @@ public class ServerConnectedListener implements Listener {
 
         scheduler.schedule(plugin, () -> {
             try {
-                if(!verifiedMembers.contains(uuid) && servers.get(Main.ServersList.MAIN.toString()).getPlayers().contains(player)) {
+                if(!verifiedMembers.contains(uuid) && !servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
                     plugin.getLogger().info("Player is not in whitelist but on a Main server!");
-                    Connection.tryConnect(player, Main.ServersList.LOGIN.toString());
+                    Connection.tryConnect(player, ServersList.LOGIN.getName());
                     return;
                 }
 
-                if(verifiedMembers.contains(uuid) && servers.get(Main.ServersList.LOGIN.toString()).getPlayers().contains(player)) {
+                if(verifiedMembers.contains(uuid) && servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
                     plugin.getLogger().info("Player is in whitelist, but in login server!");
                     Connection.tryConnect(player);
 
                     return;
                 }
-            }catch (NullPointerException e){
-                e.printStackTrace();
-            }
+            }catch (NullPointerException ignored){ }
 
-                if(servers.get(Main.ServersList.LOGIN.toString()).getPlayers().contains(player)) {
+                if(servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
 
                     scheduler.schedule(plugin, () -> {
                         try {
                             if (plugin.getProxy().getPlayer(uuid).isConnected() && !verifiedMembers.contains(uuid)) {
                                 Connection.kick(player, ChatManager.fromConfig("timeout"));
                             }
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                        }
+                        } catch (NullPointerException ignored){}
                     }, 3, TimeUnit.MINUTES);
+
 
                     if(playerDataBase.contains(YMLKeys.PASSWORD.addBeforePath(playerName).getPath()) ||
                             playerDataBase.contains(YMLKeys.PASSWD_HASH.addBeforePath(playerName).getPath()) &&

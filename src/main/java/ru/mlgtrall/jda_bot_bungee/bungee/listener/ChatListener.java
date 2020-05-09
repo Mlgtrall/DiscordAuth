@@ -6,11 +6,12 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
+import ru.mlgtrall.jda_bot_bungee.ServersList;
 import ru.mlgtrall.jda_bot_bungee.bungee.connection.Connection;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class ChatListener implements Listener {
@@ -28,17 +29,17 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChatEvent(@NotNull ChatEvent event){
-        if(!(event.getSender() instanceof ProxiedPlayer)){
-            //plugin.getLogger().info("only player can execute this command!");
-            return;
-        }
-        player = (ProxiedPlayer) event.getSender();
-        uuid = player.getUniqueId();
-        String message = event.getMessage();
-        List<UUID> verifiedMembers = plugin.getVerifiedMembers();
-        playerTriesMap.put(uuid, 0);
+        if(!(event.getSender() instanceof ProxiedPlayer)){ return; }
 
+        player = (ProxiedPlayer) event.getSender();
+        if(!player.getServer().getInfo().getName().equals(ServersList.LOGIN.getName())) return;
+
+        uuid = player.getUniqueId();
+        Set<UUID> verifiedMembers = plugin.getVerifiedMembers();
         if(verifiedMembers.contains(uuid)) return;
+
+        String message = event.getMessage();
+        playerTriesMap.put(uuid, 0);
 
         //Check if message is command
         if(!event.isCommand() && !event.isProxyCommand()){

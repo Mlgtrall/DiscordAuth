@@ -25,7 +25,7 @@ public final class Main extends Plugin {
     private static HashMap<String,Integer> nameTaskIdList;
     private static HashMap<String,String> nameMineIdDiscordMap;
 
-    private List<UUID> verifiedmembers; //UUID (Minecraft) of logged players
+    private Set<UUID> verifiedmembers; //UUID (Minecraft) of logged players
 
     private FileLoader fileLoader;
 
@@ -35,19 +35,6 @@ public final class Main extends Plugin {
 
     public static void setInstance(Main instance) {
         Main.instance = instance;
-    }
-
-    public enum ServersList{
-        MAIN("whitelist_mcfp"), LOGIN("login");
-        private final String name;
-
-        @Override
-        public String toString() {
-            return this.name;
-        }
-        ServersList(String name){
-            this.name = name;
-        }
     }
 
     @Override
@@ -77,14 +64,24 @@ public final class Main extends Plugin {
         nameTaskIdList = new HashMap<>();
         nameCodeMap = new HashMap<>();
         nameMineIdDiscordMap = new HashMap<>();
-        verifiedmembers = new ArrayList<>();
+        verifiedmembers = new HashSet<>();
         getLogger().info("Done!");
 
+        dependencies();
         registerUtils();
         assembleBot();
         registerListeners();
         registerCommands();
         checkDB();
+    }
+
+    private void dependencies() {
+        getLogger().info("Loading dependencies...");
+        if(getProxy().getPluginManager().getPlugin("LiteBans") == null){
+            getLogger().warning("LiteBans plugin not found!");
+        }
+        getLogger().info("Loading dependencies done!");
+
     }
 
     public static void main(String[] args) {
@@ -171,7 +168,7 @@ public final class Main extends Plugin {
         return fileLoader;
     }
 
-    public List<UUID> getVerifiedMembers() {
+    public Set<UUID> getVerifiedMembers() {
         return verifiedmembers;
     }
 

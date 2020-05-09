@@ -16,9 +16,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 
 public class PlayerDatabase {
@@ -31,22 +29,23 @@ public class PlayerDatabase {
 
     public static @Nullable HashMap<String,String> getPlayerData(@NotNull Configuration config, String name){
         LinkedHashSet<String> keys = (LinkedHashSet<String>) config.getKeys();
-        String path = name + ".";
+        String root = name + ".";
         HashMap<String, String > playerData = new HashMap<>();
+
         boolean playerDefined = false;
         for (String key : keys) {
             if (key.equals(name)) {
-                if(!config.contains(path + "COUNTRY")) return null;
+                if(!config.contains(root + "COUNTRY")) return null;
                 playerData.put("MINE_NAME", key);
                 playerDefined = true;
             }
             if(playerDefined) {
 
-                playerData.put("REG_DATE", config.getString(path + "REG_DATE"));
-                playerData.put("MINE_UUID", config.getString(path + "MINE_UUID"));
-                playerData.put("DISCORD_ID", config.getString(path + "DISCORD_ID"));
-                playerData.put("PASSWORD", config.getString(path + "PASSWORD"));
-                config.getSection(path + "REG_IP").getKeys().forEach(k ->
+                playerData.put("REG_DATE", config.getString(root + "REG_DATE"));
+                playerData.put("MINE_UUID", config.getString(root + "MINE_UUID"));
+                playerData.put("DISCORD_ID", config.getString(root + "DISCORD_ID"));
+                playerData.put("PASSWORD", config.getString(root + "PASSWORD"));
+                config.getSection(root + "REG_IP").getKeys().forEach(k ->
                         playerData.put("REG_IP", k));
                 return playerData;
 
@@ -54,6 +53,7 @@ public class PlayerDatabase {
         }
         return null;
     }
+
 
     public static @NotNull HashMap<String, String> getPlayerData(String mineName){
         HashMap<String, String> playerData = new HashMap<>();

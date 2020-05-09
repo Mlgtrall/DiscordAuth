@@ -19,6 +19,7 @@ import ru.mlgtrall.jda_bot_bungee.security.Password;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class LoginCommand extends Command {
@@ -40,7 +41,7 @@ public class LoginCommand extends Command {
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
         FileLoader fileLoader = plugin.getFileLoader();
-        List<UUID> verifiedMembers = plugin.getVerifiedMembers();
+        Set<UUID> verifiedMembers = plugin.getVerifiedMembers();
         ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDB = playerDBFile.getConfig();
         UUID uuid = player.getUniqueId();
@@ -111,7 +112,7 @@ public class LoginCommand extends Command {
                 .replaceAll("\\.","_")
                 .split(":")[0];
 
-        playerDB.set(YMLKeys.LOGIN_IP.addBeforePath(playerName).addToPath(ip).getPath(), now.toString());
+        playerDB.set(YMLKeys.LOGIN_IP.addBeforePath(playerName).getPath(), ip);
         playerDB.set(YMLKeys.LAST_DISPLAY_NAME.addBeforePath(playerName).getPath(), player.getDisplayName());
 
         // playerDB.set(playerName+ ".COUNTRY", player.getLocale().getCountry()); //change for geoIp

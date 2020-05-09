@@ -8,6 +8,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
+import ru.mlgtrall.jda_bot_bungee.ServersList;
 
 public class ServerConnectEventListener implements Listener {
     Main plugin;
@@ -17,6 +18,7 @@ public class ServerConnectEventListener implements Listener {
 
     @EventHandler
     public void onServerConnectEvent(@NotNull ServerConnectEvent e){
+
         ProxiedPlayer player = e.getPlayer();
         ServerConnectEvent.Reason reason = e.getReason();
         if(reason.equals(ServerConnectEvent.Reason.KICK_REDIRECT)){
