@@ -12,18 +12,16 @@ import java.io.IOException;
 public class ConfigFile{
     private ConfigFile instance;
 
-    private ConfigFile(){
-        this.plugin = Main.getInstance();
-    }
+    private ConfigFile(){ }
     public ConfigFile(@NotNull String fileName){
-        this();
+        //this();
         this.fileName = fileName;
         this.dataFolder = plugin.getDataFolder();
         load();
     }
 
     public ConfigFile(@NotNull String fileName, String folderPath){
-        this();
+        //this();
         this.fileName = fileName;
         if(folderPath == null){
             this.dataFolder = plugin.getDataFolder();
@@ -33,11 +31,16 @@ public class ConfigFile{
         load();
     }
 
-    protected final Main plugin;
+    protected static final Main plugin;
     protected File dataFolder;
     protected File file;
     protected Configuration config;
     protected String fileName;
+
+    static
+    {
+        plugin = Main.getInstance();
+    }
 
     public void checkDataFolder(){
         if(!dataFolder.exists()){
