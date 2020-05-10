@@ -75,14 +75,18 @@ public class PlayerDatabase {
             String salt = playerYMLDB.getString(YMLKeys.SALT.addBeforePath(playerName).getPath());
             String hash = playerYMLDB.getString(YMLKeys.SALT.addBeforePath(playerName).getPath());
             if(password != null){
-                if (hash != null || salt == null){
+                if(salt == null){
                     salt = Hash.createSaltStr();
                 }
+
                 hash = Hash.generateHash(password, salt);
 
                 playerYMLDB.set(YMLKeys.PASSWORD.addBeforePath(playerName).getPath(), null);
                 playerYMLDB.set(YMLKeys.SALT.addBeforePath(playerName).getPath(), salt);
                 playerYMLDB.set(YMLKeys.PASSWD_HASH.addBeforePath(playerName).getPath(), hash);
+            }else if(salt == null || hash == null){
+                playerYMLDB.set(YMLKeys.PASSWD_HASH.addBeforePath(playerName).getPath(), null);
+                playerYMLDB.set(YMLKeys.SALT.addBeforePath(playerName).getPath(), null);
             }
         }
         playerDBYMLFile.save();

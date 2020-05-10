@@ -7,3 +7,5 @@
 /jda_bot_bungee_2.iml
 /.git/
 /local/
+*.class
+*.iml
