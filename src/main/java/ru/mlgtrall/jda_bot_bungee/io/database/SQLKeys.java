@@ -8,14 +8,13 @@ public enum SQLKeys {
     LAST_DATE("LAST_DATE"), COUNTRY("COUNTRY"), MINE_NAME("MINE_NAME"),
     PASSWD_HASH("PASSWD_HASH"), SALT("SALT");
 
-    String name;
+    private final String name;
 
     SQLKeys(String name){
         this.name = name;
     }
 
-    @Override
-    public @NotNull String toString() {
+    public @NotNull String getName() {
         return this.name;
     }
 

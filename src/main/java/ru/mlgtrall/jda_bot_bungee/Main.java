@@ -92,7 +92,7 @@ public final class Main extends Plugin {
 
         ConfigFile dbConfigFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDB = dbConfigFile.getConfig();
-        PlayerDatabase.checkForFullReg(dbConfigFile);
+        //PlayerDatabase.checkForFullReg(dbConfigFile);
 
 //        getProxy().getScheduler().schedule(this, () -> {
 //                ArrayList<String> playerNamesList = PlayerDatabase.getPlayerNames(playerDB);

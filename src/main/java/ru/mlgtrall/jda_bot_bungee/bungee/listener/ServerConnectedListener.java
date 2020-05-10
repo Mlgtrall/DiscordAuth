@@ -16,7 +16,7 @@ import ru.mlgtrall.jda_bot_bungee.bungee.util.TitleManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
 import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
-import ru.mlgtrall.jda_bot_bungee.io.config.YMLKeys;
+import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 
 import java.util.Map;
 import java.util.Set;

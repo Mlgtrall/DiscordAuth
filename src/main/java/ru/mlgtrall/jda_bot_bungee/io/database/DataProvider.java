@@ -8,8 +8,8 @@ public enum DataProvider {
     DataProvider(String name){
         this.name = name;
     }
-    @Override
-    public String toString(){
+
+    public String getName(){
         return name;
     }
 }

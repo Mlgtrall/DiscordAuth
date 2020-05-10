@@ -11,13 +11,12 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
-import ru.mlgtrall.jda_bot_bungee.ServersList;
 import ru.mlgtrall.jda_bot_bungee.bungee.connection.Connection;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
 import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
-import ru.mlgtrall.jda_bot_bungee.io.config.YMLKeys;
+import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 import ru.mlgtrall.jda_bot_bungee.jda.BotFactory;
 
 import java.util.*;
@@ -33,23 +32,6 @@ public class PostLoginEventListener implements Listener {
 
     @EventHandler
     public void onPostLoginEvent(@NotNull final PostLoginEvent event){
-
-        try {
-            if (!ServersList.isAuthorizedServer(event.getPlayer().getReconnectServer().getName())) {
-                pl.getLogger().info("getReconnectServer() detected not authorized server! | [Debug]");
-                return;
-            }
-        }catch (NullPointerException ignored){
-            pl.getLogger().info("Reconnect Server is null");
-        }
-        try {
-            if (!ServersList.isAuthorizedServer(event.getPlayer().getServer().getInfo().getName())) {
-                pl.getLogger().info("getServer() detected not authorized server! | [Debug]");
-                return;
-            }
-        }catch (NullPointerException ignored){
-            pl.getLogger().info("Server is null");
-        }
 
         final ProxiedPlayer player = event.getPlayer();
         Logger logger = pl.getLogger();

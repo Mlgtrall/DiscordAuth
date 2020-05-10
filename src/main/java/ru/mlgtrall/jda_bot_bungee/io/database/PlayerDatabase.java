@@ -2,6 +2,7 @@ package ru.mlgtrall.jda_bot_bungee.io.database;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.mlgtrall.jda_bot_bungee.Main;
@@ -9,13 +10,8 @@ import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
 import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
-import ru.mlgtrall.jda_bot_bungee.io.transfer.MySQLDriver;
 import ru.mlgtrall.jda_bot_bungee.security.Hash;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 
 
@@ -23,65 +19,79 @@ public class PlayerDatabase {
 
     private static final Main pl = Main.getInstance();
 
-    public PlayerDatabase(){
-        
-    }
+    private PlayerDatabase(){ }
 
     public static @Nullable HashMap<String,String> getPlayerData(@NotNull Configuration config, String name){
-        LinkedHashSet<String> keys = (LinkedHashSet<String>) config.getKeys();
-        String root = name + ".";
-        HashMap<String, String > playerData = new HashMap<>();
+        LinkedHashSet<String> players = (LinkedHashSet<String>) config.getKeys();
 
         boolean playerDefined = false;
-        for (String key : keys) {
-            if (key.equals(name)) {
-                if(!config.contains(root + "COUNTRY")) return null;
-                playerData.put("MINE_NAME", key);
+        for(String player : players){
+            if (player.equals(name)) {
                 playerDefined = true;
-            }
-            if(playerDefined) {
-
-                playerData.put("REG_DATE", config.getString(root + "REG_DATE"));
-                playerData.put("MINE_UUID", config.getString(root + "MINE_UUID"));
-                playerData.put("DISCORD_ID", config.getString(root + "DISCORD_ID"));
-                playerData.put("PASSWORD", config.getString(root + "PASSWORD"));
-                config.getSection(root + "REG_IP").getKeys().forEach(k ->
-                        playerData.put("REG_IP", k));
-                return playerData;
-
+                break;
             }
         }
-        return null;
-    }
 
+        if(!playerDefined){
+            pl.getLogger().warning("The player, declared as '"+ name +"' doesn't exist in database.");
+            return null;
+        }
 
-    public static @NotNull HashMap<String, String> getPlayerData(String mineName){
+        String pathToPlayer = YMLKeys.defPathToPlayer + name;
+        LinkedHashSet<String> playerDataKeys = (LinkedHashSet<String>) config.getSection(pathToPlayer).getKeys();
         HashMap<String, String> playerData = new HashMap<>();
-        Connection connection;
-        try {
-            connection = MySQLDriver.getConnection();
-            Statement statement = connection.createStatement();
-            String sql = "SELECT * FROM " + MySQLDriver.table + " WHERE " + SQLKeys.MINE_NAME.toString() + " " + mineName;
-            ResultSet resultSet = statement.executeQuery(sql);
-            connection.close();
-            for(SQLKeys key : SQLKeys.values()){
-                if(key.equals(SQLKeys.MINE_NAME)){
-                    playerData.put(key.toString(), mineName);
-                }else {
-                    playerData.put(key.toString(), resultSet.getString(resultSet.findColumn(key.toString())));
+
+        for(YMLKeys ymlKey : YMLKeys.values()){
+            playerData.put(ymlKey.getName(), null);
+        }
+
+        for(String key : playerDataKeys){
+            for(YMLKeys ymlKey : YMLKeys.values()){
+                if(ymlKey.getName().equals(key)){
+                    playerData.put(ymlKey.getName(), config.getString(pathToPlayer + YMLKeys.separator + key ));
                 }
             }
-        } catch (SQLException exception) {
-            exception.printStackTrace();
         }
+
         return playerData;
     }
 
+    public static @NotNull Collection<String> getPlayersKeys(Configuration config){
+        Collection<String> playersKeys;
+        String playersLevel = YMLKeys.defPathToPlayer;
+        if(!playersLevel.isEmpty()){
+            config = config.getSection(playersLevel);
+        }
+        playersKeys = config.getKeys();
+        return playersKeys;
+    }
 
-    public static HashMap<String, String> toMySQLFormat(@NotNull HashMap<String, String> playerData){
-        String password = playerData.get("PASSWORD");
-        String salt = Hash.createSaltStr();
-        String hash = Hash.generateHash(password, salt);
+    public static void hashedPasswordCheck(@NotNull ConfigFile playerDBYMLFile){
+        Configuration playerYMLDB = playerDBYMLFile.getConfig();
+        LinkedHashSet<String> playersNames = (LinkedHashSet<String>) getPlayersKeys(playerYMLDB);
+
+        for(String playerName : playersNames){
+            String password = playerYMLDB.getString(YMLKeys.PASSWORD.addBeforePath(playerName).getPath());
+            String salt = playerYMLDB.getString(YMLKeys.SALT.addBeforePath(playerName).getPath());
+            String hash = playerYMLDB.getString(YMLKeys.SALT.addBeforePath(playerName).getPath());
+            if(password != null){
+                if (hash != null || salt == null){
+                    salt = Hash.createSaltStr();
+                }
+                hash = Hash.generateHash(password, salt);
+
+                playerYMLDB.set(YMLKeys.PASSWORD.addBeforePath(playerName).getPath(), null);
+                playerYMLDB.set(YMLKeys.SALT.addBeforePath(playerName).getPath(), salt);
+                playerYMLDB.set(YMLKeys.PASSWD_HASH.addBeforePath(playerName).getPath(), hash);
+            }
+        }
+        playerDBYMLFile.save();
+
+    }
+
+    public static @NotNull Map<String, String> convertYmlToMySQL(@NotNull HashMap<String, String> playerData){
+        String salt = playerData.get(YMLKeys.SALT.getName());
+        String hash = playerData.get(YMLKeys.PASSWD_HASH.getName());
         playerData.remove("PASSWORD");
         playerData.put("PASSWD_HASH", hash);
         playerData.put("SALT", salt);
@@ -90,9 +100,9 @@ public class PlayerDatabase {
     }
 
 
-    public static void checkForFullReg(@NotNull ConfigFile configFile){
+    public static void checkForFullReg(@NotNull ConfigFile configFile){ //change!!!
         Configuration config = configFile.getConfig();
-        for(String name : getPlayerNames(config)){
+        for(String name : getPlayersNames(config)){
             if(getPlayerData(config, name) == null){
                 config.set(name, null);
             }
@@ -100,31 +110,30 @@ public class PlayerDatabase {
         configFile.save();
     }
 
-    public static @NotNull ArrayList<String> getPlayerNames(@NotNull Configuration config){
-        LinkedHashSet<String> keys = (LinkedHashSet<String>) config.getKeys();
-        ArrayList<String> playerNames = new ArrayList<>(keys);
-        return playerNames;
+    public static @NotNull Map<String, HashMap<String, String>> getAllPlayersData(@NotNull Configuration config){
+        HashMap<String, HashMap<String, String>> allPlayersData = new HashMap<>();
+         for(String name: getPlayersNames(config)){
+             allPlayersData.put(name, getPlayerData(config, name));
+         }
+         return allPlayersData;
+    }
+
+    public static @NotNull Collection<String> getPlayersNames(@NotNull Configuration config){
+        LinkedHashSet<String> playersNamesSet = (LinkedHashSet<String>) config.getKeys();
+        return new LinkedHashSet<>(playersNamesSet);
     }
 
 
     public static boolean isPlayerName(@NotNull String key){
-//        for(YMLKeys ymlKey : YMLKeys.values()){
-//            if(ymlKey.toString().equals(key)){
-//                return false;
-//            }
-//        }
-//        return true;
-        return !key.equalsIgnoreCase("REG_DATE")
-                && !key.equalsIgnoreCase("MINE_UUID")
-                && !key.equalsIgnoreCase("DISCORD_ID")
-                && !key.equalsIgnoreCase("PASSWORD")
-                && !key.equalsIgnoreCase("REG_IP")
-                && !key.equalsIgnoreCase("COUNTRY")
-                && !key.equalsIgnoreCase("LAST_DISPLAY_NAME")
-                && !key.equalsIgnoreCase("LOGIN_IP");
+        for(YMLKeys ymlKey : YMLKeys.values()){
+            if(key.equals(ymlKey.getName())){
+                return false;
+            }
+        }
+        return true;
     }
 
-    public static boolean check(@NotNull ProxiedPlayer player){
+    public static boolean checkState(@NotNull ProxiedPlayer player){
         Configuration playerDB = FileLoader.getInstance().get(ConfigFiles.PLAYER_DB_YML).getConfig();
         String playerName = player.getName();
 

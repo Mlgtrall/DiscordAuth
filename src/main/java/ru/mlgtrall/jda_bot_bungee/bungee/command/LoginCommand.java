@@ -15,12 +15,10 @@ import ru.mlgtrall.jda_bot_bungee.bungee.util.TitleManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
 import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
-import ru.mlgtrall.jda_bot_bungee.io.config.YMLKeys;
+import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 import ru.mlgtrall.jda_bot_bungee.security.Hash;
-import ru.mlgtrall.jda_bot_bungee.security.Password;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,8 +41,8 @@ public class LoginCommand extends Command {
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
         ServerInfo serverInfo = player.getServer().getInfo();
-        if(ServersList.isAuthorizedServer(serverInfo.getName())){
-
+        if(!ServersList.isAuthorizedServer(serverInfo.getName())){
+            return;
         }
 
         FileLoader fileLoader = plugin.getFileLoader();
@@ -61,7 +59,7 @@ public class LoginCommand extends Command {
         }
 
         //Checking database
-        if(!playerDB.contains(YMLKeys.PASSWORD.addBeforePath(playerName).getPath()) ||
+        if(!playerDB.contains(YMLKeys.PASSWORD.addBeforePath(playerName).getPath()) &&
                 !playerDB.contains(YMLKeys.PASSWD_HASH.addBeforePath(playerName).getPath()) &&
                         playerDB.contains(YMLKeys.DISCORD_ID.addBeforePath(playerName).getPath())){
             player.sendMessage(ChatManager.fromConfig("need_reg", true));

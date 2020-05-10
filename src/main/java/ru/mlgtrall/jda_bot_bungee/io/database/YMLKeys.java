@@ -1,6 +1,5 @@
-package ru.mlgtrall.jda_bot_bungee.io.config;
+package ru.mlgtrall.jda_bot_bungee.io.database;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public enum YMLKeys {
@@ -20,6 +19,8 @@ public enum YMLKeys {
     private final String name;
     private final String asPath;
     private String fullPath;
+    public static final String defPathToPlayer = "";
+    public static final String separator = ".";
 
     YMLKeys(){
         name = this.name();
@@ -37,8 +38,7 @@ public enum YMLKeys {
         this.fullPath = asPath;
     }
 
-    @Override
-    public @NotNull String toString() {
+    public @NotNull String getName() {
         return this.name;
     }
 
