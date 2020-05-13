@@ -16,7 +16,7 @@ import ru.mlgtrall.jda_bot_bungee.bungee.util.CommandUtils;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.TitleManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 import ru.mlgtrall.jda_bot_bungee.jda.BotFactory;
 import ru.mlgtrall.jda_bot_bungee.jda.util.JDAConfigUtils;
@@ -48,7 +48,7 @@ public class AuthCommand extends Command {
         }
 
         FileLoader fileLoader = plugin.getFileLoader();
-        ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
+        YMLConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDB = playerDBFile.getConfig();
         String playerName = player.getName();
         UUID playerUUID = player.getUniqueId();
@@ -84,7 +84,7 @@ public class AuthCommand extends Command {
         //String discordid = playerDB.getString(playerName + ".DISCORD_ID");
         Member target = botFactory.getGuild().getMemberById(discordid);
 
-        if(target == null){ //Player left discord
+        if(target == null){ //AuthPlayer left discord
             nameCodeMap.remove(playerName);
             nameMineIdDiscordMap.remove(playerName);
             playerDB.set(YMLKeys.DISCORD_ID.addBeforePath(playerName).getPath(), null);
@@ -92,6 +92,7 @@ public class AuthCommand extends Command {
             Connection.kick(player,"");
             return;
         }
+
 
         playerDB.set(YMLKeys.MINE_UUID.addBeforePath(playerName).getPath(), playerUUID.toString());
         playerDB.set(YMLKeys.DISCORD_ID.addBeforePath(playerName).getPath(), discordid);

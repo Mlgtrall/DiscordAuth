@@ -15,7 +15,7 @@ import ru.mlgtrall.jda_bot_bungee.bungee.connection.Connection;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 import ru.mlgtrall.jda_bot_bungee.jda.BotFactory;
 
@@ -37,7 +37,7 @@ public class PostLoginEventListener implements Listener {
         Logger logger = pl.getLogger();
         final UUID uuid = player.getUniqueId();
         FileLoader fileLoader = pl.getFileLoader();
-        ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
+        YMLConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDB = playerDBFile.getConfig();
         final String playerName = player.getName();
         Set<UUID> verifiedmembers = pl.getVerifiedMembers();
@@ -117,7 +117,7 @@ public class PostLoginEventListener implements Listener {
 
         //IP
         String ip = player.getSocketAddress().toString().replaceAll("\\.","_").split(":")[0];
-        logger.info("Player yamled ip = " + ip);
+        logger.info("AuthPlayer yamled ip = " + ip);
 
 //        playerDB.set(playerName + "." + config_keys.get(Main.ConfigKeys.LAST_DISPLAY_NAME), player.getDisplayName());
         playerDB.set(YMLKeys.LAST_DISPLAY_NAME.addBeforePath(playerName).getPath(), player.getDisplayName());

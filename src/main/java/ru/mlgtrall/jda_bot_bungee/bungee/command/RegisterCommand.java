@@ -11,7 +11,7 @@ import ru.mlgtrall.jda_bot_bungee.bungee.util.CommandUtils;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.TitleManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 import ru.mlgtrall.jda_bot_bungee.security.Hash;
 import ru.mlgtrall.jda_bot_bungee.security.Password;
@@ -32,7 +32,7 @@ public class RegisterCommand extends Command {
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
         FileLoader fileLoader = plugin.getFileLoader();
-        ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
+        YMLConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDB = playerDBFile.getConfig();
         UUID uuid = player.getUniqueId();
         String playerName = player.getName();

@@ -9,3 +9,4 @@
 /local/
 *.class
 *.iml
+/gradle.properties

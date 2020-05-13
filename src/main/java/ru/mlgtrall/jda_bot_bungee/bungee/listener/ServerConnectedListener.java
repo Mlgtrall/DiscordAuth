@@ -15,7 +15,7 @@ import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.TitleManager;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 
 import java.util.Map;
@@ -50,7 +50,7 @@ public class ServerConnectedListener implements Listener {
         pl.getLogger().info("ServerConnected event = " + event.toString());
 
         FileLoader fileLoader = pl.getFileLoader();
-        ConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
+        YMLConfigFile playerDBFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDataBase = playerDBFile.getConfig();
         final UUID uuid = player.getUniqueId();
         String playerName = player.getName();
@@ -59,13 +59,13 @@ public class ServerConnectedListener implements Listener {
         scheduler.schedule(pl, () -> {
             try {
                 if(!verifiedMembers.contains(uuid) && !servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
-                    pl.getLogger().info("Player is not in whitelist but on a Main server!");
+                    pl.getLogger().info("AuthPlayer is not in whitelist but on a Main server!");
                     Connection.tryConnect(player, ServersList.LOGIN.getName());
                     return;
                 }
 
                 if(verifiedMembers.contains(uuid) && servers.get(ServersList.LOGIN.getName()).getPlayers().contains(player)) {
-                    pl.getLogger().info("Player is in whitelist, but in login server!");
+                    pl.getLogger().info("AuthPlayer is in whitelist, but in login server!");
                     Connection.tryConnect(player);
 
                     return;

@@ -3,7 +3,7 @@ package ru.mlgtrall.jda_bot_bungee.io;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
-import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -21,15 +21,18 @@ public final class FileLoader {
         instance = new FileLoader();
     }
 
+    public void addConfigFile(){
+
+    }
+
     public static FileLoader getInstance() {
         return instance;
     }
 
-    private static HashMap<ConfigFiles, ConfigFile> configFilesHashMap;
+    private static HashMap<ConfigFiles, YMLConfigFile> configFiles;
 
-    public @NotNull
-    ConfigFile get(@NotNull ConfigFiles file){
-        return configFilesHashMap.get(file);
+    public @NotNull YMLConfigFile get(@NotNull ConfigFiles file){
+        return configFiles.get(file);
     }
 
     private FileLoader(){
@@ -42,14 +45,14 @@ public final class FileLoader {
     }
 
     private static void loadAllFiles(){
-        configFilesHashMap = new HashMap<>();
+        configFiles = new HashMap<>();
 
         for(ConfigFiles file : ConfigFiles.values()){
             if(file == null) { throw new NullPointerException("file is null");}
             if(file.getFolderPath() != null){
-                configFilesHashMap.put(file, new ConfigFile(file.getFileName(), file.getFolderPath()));
+                configFiles.put(file, new YMLConfigFile(file.getFileName(), file.getFolderPath()));
             }else if(file.getFileName() != null){
-                configFilesHashMap.put(file, new ConfigFile(file.getFileName()));
+                configFiles.put(file, new YMLConfigFile(file.getFileName()));
             }else{
                 logger.info("Error in loading file " + file.toString() + " all params are null!");
             }
@@ -60,7 +63,7 @@ public final class FileLoader {
     private static void reloadAllFiles(){
 
         for(ConfigFiles file : ConfigFiles.values()){
-            configFilesHashMap.get(file).reload();
+            configFiles.get(file).reload();
         }
 
     }

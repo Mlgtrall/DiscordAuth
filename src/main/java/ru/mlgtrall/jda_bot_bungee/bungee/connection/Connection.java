@@ -35,7 +35,7 @@ public class Connection {
         pl.getLogger().info("Trying to connect to "+ toServerByName +" server...");
         player.sendMessage(ChatManager.fromConfig("trying_to_connect",true));
         player.connect(pl.getProxy().getServers().get(toServerByName));
-        pl.getLogger().info("Player has sent to "+ toServerByName +" server!");
+        pl.getLogger().info("AuthPlayer has sent to "+ toServerByName +" server!");
 
         pl.getProxy().getScheduler().schedule(pl, () -> {
             try {
@@ -63,7 +63,7 @@ public class Connection {
         pl.getLogger().info("Trying to connect to Main server...");
         player.sendMessage(ChatManager.fromConfig("trying_to_connect",true));
         player.connect(pl.getProxy().getServers().get(toServerByName));
-        pl.getLogger().info("Player has sent to Main server!");
+        pl.getLogger().info("AuthPlayer has sent to Main server!");
 
         pl.getProxy().getScheduler().schedule(pl, () -> {
             try {

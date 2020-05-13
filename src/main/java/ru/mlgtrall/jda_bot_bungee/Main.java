@@ -6,8 +6,7 @@ import ru.mlgtrall.jda_bot_bungee.bungee.command.RegisterCommand;
 import ru.mlgtrall.jda_bot_bungee.bungee.listener.*;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
-import ru.mlgtrall.jda_bot_bungee.io.database.PlayerDatabase;
+import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.jda.BotFactory;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -85,19 +84,18 @@ public final class Main extends Plugin {
     }
 
     public static void main(String[] args) {
-
     }
 
     private void checkDB() {
 
-        ConfigFile dbConfigFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
+        YMLConfigFile dbConfigFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
         Configuration playerDB = dbConfigFile.getConfig();
-        //PlayerDatabase.checkForFullReg(dbConfigFile);
+
 
 //        getProxy().getScheduler().schedule(this, () -> {
-//                ArrayList<String> playerNamesList = PlayerDatabase.getPlayerNames(playerDB);
+//                ArrayList<String> playerNamesList = DatabaseProvider.getPlayerNames(playerDB);
 //                for (String name : playerNamesList){
-//                    HashMap<String, String> playerData = PlayerDatabase.getPlayerData(playerDB, name);
+//                    HashMap<String, String> playerData = DatabaseProvider.getPlayerData(playerDB, name);
 //                    assert playerData != null;
 //                    String id = playerData.get("DISCORD_ID");
 //                    botFactory.getGuild().getMember(botFactory
