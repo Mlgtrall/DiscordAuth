@@ -6,7 +6,7 @@ import ru.mlgtrall.jda_bot_bungee.bungee.command.RegisterCommand;
 import ru.mlgtrall.jda_bot_bungee.bungee.listener.*;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.file.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.jda.BotFactory;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;

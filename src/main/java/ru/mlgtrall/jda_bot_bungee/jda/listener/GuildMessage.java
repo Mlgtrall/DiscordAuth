@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.file.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.io.database.YMLKeys;
 import ru.mlgtrall.jda_bot_bungee.jda.BotFactory;
 import ru.mlgtrall.jda_bot_bungee.jda.util.JDAConfigUtils;

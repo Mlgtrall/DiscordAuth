@@ -3,7 +3,7 @@ package ru.mlgtrall.jda_bot_bungee.io;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee.Main;
-import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.file.config.YMLConfigFile;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;

@@ -6,9 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.mlgtrall.jda_bot_bungee.Main;
 import ru.mlgtrall.jda_bot_bungee.bungee.util.ChatManager;
+import ru.mlgtrall.jda_bot_bungee.data.AuthPlayer;
 import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.file.config.YMLConfigFile;
 import ru.mlgtrall.jda_bot_bungee.security.Hash;
 
 import java.util.*;
