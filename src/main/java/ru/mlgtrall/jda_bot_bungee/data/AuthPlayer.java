@@ -1,4 +1,4 @@
-package ru.mlgtrall.jda_bot_bungee.io.database;
+package ru.mlgtrall.jda_bot_bungee.data;
 
 import lombok.Data;
 import lombok.Getter;
