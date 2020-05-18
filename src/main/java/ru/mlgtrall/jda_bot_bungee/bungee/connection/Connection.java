@@ -27,7 +27,7 @@ public class Connection {
 
     private static HashMap<UUID, Integer> playerTriesMap;
 
-    public static void tryConnect(@NotNull ProxiedPlayer player, String toServerByName){
+    public static void tryConnect(@NotNull ProxiedPlayer player, String toServerByName){ //DO NOT USE THIS WHILE PLAYER LOGGING IN
 
         ServerInfo server = pl.getProxy().getServers().get(toServerByName);
         UUID uuid = player.getUniqueId();
@@ -53,29 +53,8 @@ public class Connection {
     }
 
     public static void tryConnect(@NotNull ProxiedPlayer player) {
-
-//        String toServerByName = pl.getServersListEnum().get(Main.ServersList.MAIN);
         String toServerByName = ServersList.MAIN.getName();
-        ServerInfo server = pl.getProxy().getServers().get(toServerByName);
-        UUID uuid = player.getUniqueId();
-
-
-        pl.getLogger().info("Trying to connect to Main server...");
-        player.sendMessage(ChatManager.fromConfig("trying_to_connect",true));
-        player.connect(pl.getProxy().getServers().get(toServerByName));
-        pl.getLogger().info("AuthPlayer has sent to Main server!");
-
-        pl.getProxy().getScheduler().schedule(pl, () -> {
-            try {
-                if (pl.getProxy().getPlayer(uuid).isConnected() && !server.getPlayers().contains(player)) {
-                    playerTriesMap.put(uuid, 0);
-                    check(player, toServerByName);
-                }
-            }catch (NullPointerException e){
-                e.printStackTrace();
-            }
-        } , 5, TimeUnit.SECONDS);
-
+        tryConnect(player, toServerByName);
     }
 
     private static void check(@NotNull ProxiedPlayer player, String toServerByName) {
