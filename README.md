@@ -3,5 +3,5 @@ BungeeCord Auth plugin for offline mod (online_mod = false) servers with discord
 ## Getting started
 
 ## Tested minecraft versions
-* ###1.15.2
+* ### 1.15.2
 
