@@ -1,20 +1,23 @@
-package ru.mlgtrall.jda_bot_bungee.io.database;
+package ru.mlgtrall.jda_bot_bungee.io.database.yml;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.mlgtrall.jda_bot_bungee.io.database.DataColumns;
+import ru.mlgtrall.jda_bot_bungee.io.database.KeyHolder;
 
-public enum YMLKeys {
+@Deprecated
+public enum YMLKeys implements KeyHolder {
+    MINE_NAME("MINE_NAME"),
     DISCORD_ID("DISCORD_ID"),
-    PASSWORD("PASSWORD"),
     REG_IP("REG_IP"),
     MINE_UUID("MINE_UUID"),
-    LAST_DISPLAY_NAME("LAST_DISPLAY_NAME"),
+    //LAST_DISPLAY_NAME("LAST_DISPLAY_NAME"),
     LOGIN_IP("LOGIN_IP"),
-    DISCORD_NICKNAME("DISCORD_NICKNAME"),
-    DISCORD_ENAME("DISCORD_ENAME"),
     REG_DATE("REG_DATE"),
     COUNTRY("COUNTRY"),
     SALT("SALT"),
     PASSWD_HASH("PASSWD_HASH");
+
 
     private final String name;
     private final String asPath;
@@ -38,6 +41,7 @@ public enum YMLKeys {
         this.fullPath = asPath;
     }
 
+    @Override
     public @NotNull String getName() {
         return this.name;
     }
@@ -74,4 +78,12 @@ public enum YMLKeys {
         }
         return this;
     }
+
+    public static @Nullable YMLKeys isValidKey(String key) {
+        for(YMLKeys val : YMLKeys.values()){
+            if(val.getName().equalsIgnoreCase(key)) return val;
+        }
+        return null;
+    }
 }
+
