@@ -1,13 +1,5 @@
 package ru.mlgtrall.jda_bot_bungee.bootstrap;
 
-/**
- * Interface for savable entities.
- *
- */
-public interface Savable {
-
-    /**
-     * Performs the save action.
-     */
+public interface Savable{
     void save();
 }
