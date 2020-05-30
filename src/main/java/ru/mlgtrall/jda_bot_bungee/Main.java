@@ -4,10 +4,12 @@ import ru.mlgtrall.jda_bot_bungee.bungee.command.AuthCommand;
 import ru.mlgtrall.jda_bot_bungee.bungee.command.LoginCommand;
 import ru.mlgtrall.jda_bot_bungee.bungee.command.RegisterCommand;
 import ru.mlgtrall.jda_bot_bungee.bungee.listener.*;
-import ru.mlgtrall.jda_bot_bungee.io.ConfigFiles;
+import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.config.ConfigFileTemplates;
 import ru.mlgtrall.jda_bot_bungee.io.FileLoader;
-import ru.mlgtrall.jda_bot_bungee.io.file.config.YMLConfigFile;
-import ru.mlgtrall.jda_bot_bungee.jda.BotFactory;
+import ru.mlgtrall.jda_bot_bungee.io.config.YMLConfigFile;
+import ru.mlgtrall.jda_bot_bungee.io.database.mysql.MySQLDriver;
+import ru.mlgtrall.jda_bot_bungee.discord.BotFactory;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
@@ -55,6 +57,7 @@ public final class Main extends Plugin {
 
     @Override
     public void onDisable() {
+        MySQLDriver.getInstance().closeConnection();
         getLogger().info("plugin disabled! | By Mlgtrall");
     }
 
@@ -88,42 +91,15 @@ public final class Main extends Plugin {
 
     private void checkDB() {
 
-        YMLConfigFile dbConfigFile = fileLoader.get(ConfigFiles.PLAYER_DB_YML);
+        ConfigFile dbConfigFile = fileLoader.getConfigFile(ConfigFileTemplates.PLAYER_DB_YML);
         Configuration playerDB = dbConfigFile.getConfig();
-
-
-//        getProxy().getScheduler().schedule(this, () -> {
-//                ArrayList<String> playerNamesList = DatabaseProvider.getPlayerNames(playerDB);
-//                for (String name : playerNamesList){
-//                    HashMap<String, String> playerData = DatabaseProvider.getPlayerData(playerDB, name);
-//                    assert playerData != null;
-//                    String id = playerData.get("DISCORD_ID");
-//                    botFactory.getGuild().getMember(botFactory
-//                            .getJDA().getUserById(id)).getRoles().containsAll(botFactory.getRequiredRoleList());
-//                    JDA jda = botFactory.getJDA();
-//                    Guild guild = botFactory.getGuild();
-//                    User user = jda.getUserById(id);
-//                    Member member = guild.getMember(user);
-//                    List<Role> roles = member.getRoles();
-//                    roles.forEach(role -> {
-//                        String roleId = role.getId();
-//                        String roleName = role.getName();
-//                        List<String> requiredRoles = botFactory.getRequiredRoleList();
-//                        if(requiredRoles.contains(roleId) || requiredRoles.contains(roleName)){
-//                            MySQLDriver.update(id, "VERIFIED", "1");
-//                        }else{
-//                            MySQLDriver.update(id, "VERIFIED", "0");
-//                        }
-//                    });
-//                }
-//
-//        }, 5, TimeUnit.MINUTES); //add to bot?
 
     }
 
     private void registerListeners(){
         getLogger().info("Registering bungee listeners...");
         //Event listeners bungee
+        getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
         getProxy().getPluginManager().registerListener(this, new PostLoginEventListener(this));
         getProxy().getPluginManager().registerListener(this, new PlayerDisconnectListener(this));
         getProxy().getPluginManager().registerListener(this, new ChatListener(this));
