@@ -1,4 +1,4 @@
-package ru.mlgtrall.jda_bot_bungee.bungee.util;
+package ru.mlgtrall.jda_bot_bungee.util;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
@@ -8,9 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-import static ru.mlgtrall.jda_bot_bungee.bungee.util.TimeManager.timeToTicks;
+import static ru.mlgtrall.jda_bot_bungee.util.TimeUtil.timeToTicks;
 
-public class TitleManager {
+public final class BungeeTitleUtil {
+
+    private BungeeTitleUtil(){}
 
     public static void settings(@NotNull Title title){
         title.fadeIn(timeToTicks(3, TimeUnit.SECONDS));
@@ -27,7 +29,7 @@ public class TitleManager {
     public static void send(ProxiedPlayer player, @NotNull String msg, @NotNull Title title){
         title.reset();
         settings(title);
-        String[] strings = msg.split(ChatManager.lineSeparator);
+        String[] strings = msg.split(BungeeChatUtil.lineSeparator);
         title.title(new TextComponent(strings[0]));
         for (int i = 1; i<strings.length; ++i){
             title.subTitle(new TextComponent(strings[i]));
@@ -39,7 +41,7 @@ public class TitleManager {
         Title title = ProxyServer.getInstance().createTitle();
         title.reset();
         settings(title);
-        String[] strings = msg.split(ChatManager.lineSeparator);
+        String[] strings = msg.split(BungeeChatUtil.lineSeparator);
         title.title(new TextComponent(strings[0]));
         for (int i = 1; i<strings.length; ++i){
             title.subTitle(new TextComponent(strings[i]));
@@ -51,7 +53,7 @@ public class TitleManager {
         Title title = ProxyServer.getInstance().createTitle();
         title.reset();
         settings(title, stay, fadeIn, fadeOut, timeUnit);
-        String[] strings = msg.split(ChatManager.lineSeparator);
+        String[] strings = msg.split(BungeeChatUtil.lineSeparator);
         title.title(new TextComponent(strings[0]));
         for (int i = 1; i<strings.length; ++i){
             title.subTitle(new TextComponent(strings[i]));
