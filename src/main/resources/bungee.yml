@@ -1,5 +1,5 @@
 name: AnnaRegistrator_bungee
 version: @version@
-main: ru.mlgtrall.jda_bot_bungee.Main
+main: ru.mlgtrall.jda_bot_bungee_auth.Main
 softdepends:
   - LiteBans

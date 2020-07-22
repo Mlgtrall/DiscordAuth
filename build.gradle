@@ -1,4 +1,12 @@
-//apply plugin: 'java'
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies{
+        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
+    }
+}
 
 plugins{
     id 'java'
@@ -7,7 +15,7 @@ plugins{
     id 'io.franzbecker.gradle-lombok' version '1.14'
 }
 
-mainClassName = 'ru.mlgtrall.jda_bot_bungee.Main'
+mainClassName = 'ru.mlgtrall.jda_bot_bungee_auth.Main'
 
 group = pluginGroup
 version = pluginVersion
@@ -15,15 +23,18 @@ version = pluginVersion
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-repositories{
-    jcenter()
-}
 
 repositories {
     mavenCentral()
     maven {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven{
+        url = "https://repo.aikar.co/content/groups/aikar/"
+    }
+    maven{
+        url = "https://hub.spigotmc.org/nexus/content/groups/public/"
     }
 }
 
@@ -32,13 +43,28 @@ lombok{
     sha256 = ""
 }
 
+compileJava{
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
+
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
     compileOnly 'net.md-5:bungeecord-api:1.15-SNAPSHOT'
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
-    //compile fileTree(dir: 'F:\\java\\jda_bot_bungee_2\\local', includes: ['*.jar'])
     compile group: 'ch.jalu', name: 'configme', version: '1.1.0'
     compile files('F:\\java\\jda_bot_bungee_2\\local/Discord_Bot_API_-_V3.0.jar')
+    compile "co.aikar:idb-core:1.0.0-SNAPSHOT"
+    compile "com.zaxxer:HikariCP:2.4.1"
+    compile group: 'ch.jalu', name: 'injector', version: '1.0'
+    compile group: "co.aikar", name: "acf-bungee", version: "0.5.0-SNAPSHOT"
+
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -48,3 +74,11 @@ processResources {
         filter ReplaceTokens, tokens: [version: version]
     }
 }
+
+shadowJar{
+    relocate 'co.aikar.idb', 'ru.mlgtrall.jda_bot_bungee_auth.idb'
+    relocate 'co.aikar.commands', 'ru.mlgtrall.jda_bot_bungee_auth.acf'
+    relocate 'co.aikar.locales', 'ru.mlgtrall.jda_bot_bungee_auth.locales'
+}
+
+build.dependsOn shadowJar
