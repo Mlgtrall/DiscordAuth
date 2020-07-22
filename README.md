@@ -1,4 +1,4 @@
-# bungee-discord-bot-auth
+# DiscordAuth for minecraft
 BungeeCord Auth plugin for offline mod (online_mod = false) servers with discord required roles synchronization and discord account synchronization with minecraft profile.
 ## Getting started
 
