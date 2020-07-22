@@ -25,6 +25,7 @@ public final class SettingsRetriever {
                         DiscordSettings.Guild.class,
                         DiscordSettings.Role.class,
                         CoreSettings.BungeeCord.class,
+                        CoreSettings.BungeeCord.Registration.class,
                         CoreSettings.Debug.class,
                         CoreSettings.Debug.Lock.class,
                         DiscordSettings.Channel.class,

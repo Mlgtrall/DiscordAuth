@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
-/*
-    Bean class of a player data
+/**
+ * A bean class that represents a main player data skeleton for a whole plugin.
  */
 
 @Data
