@@ -12,8 +12,6 @@ import ru.mlgtrall.jda_bot_bungee_auth.io.FileLoader;
 
 public final class BungeeChatConfig {
 
-    private static final Main pl = Main.getInstance();
-
     private static final FileLoader fileLoader = InjectorContainer.get().getSingleton(FileLoader.class);
 
     private static final Configuration bungeeConfig = fileLoader.getConfigFile(ConfigFileTemplate.BUNGEE_CHAT).getConfig();
@@ -59,9 +57,9 @@ public final class BungeeChatConfig {
         return textComponent;
     }
 
-    public static @NotNull TextComponent fromConfig(@NotNull String path, String replaceble, String replace, @NotNull Boolean newLine){
+    public static @NotNull TextComponent fromConfig(@NotNull String path, String replaceable, String replace, @NotNull Boolean newLine){
         TextComponent textComponent;
-        final String fromConfig = bungeeConfig.getString(path.toUpperCase()).replaceAll(replaceble, replace).replaceAll(lineSeparator, "\n");
+        final String fromConfig = bungeeConfig.getString(path.toUpperCase()).replaceAll(replaceable, replace).replaceAll(lineSeparator, "\n");
         final String fromConfigWithColor = ChatColor.translateAlternateColorCodes('&', fromConfig);
         if(newLine){
             textComponent = new TextComponent("\n");
@@ -77,9 +75,9 @@ public final class BungeeChatConfig {
          return textComponent;
     }
 
-    public static @NotNull TextComponent fromConfig(@NotNull String path, String replaceble, String replace){
+    public static @NotNull TextComponent fromConfig(@NotNull String path, String replaceable, String replace){
         TextComponent textComponent = new TextComponent();
-        String fromConfig = bungeeConfig.getString(path.toUpperCase()).replaceAll(replaceble,replace).replaceAll(lineSeparator,"\n");
+        String fromConfig = bungeeConfig.getString(path.toUpperCase()).replaceAll(replaceable,replace).replaceAll(lineSeparator,"\n");
         String fromConfigWithColor = ChatColor.translateAlternateColorCodes('&', fromConfig);
         for(BaseComponent c: TextComponent.fromLegacyText(fromConfigWithColor)) {
             textComponent.addExtra(c);

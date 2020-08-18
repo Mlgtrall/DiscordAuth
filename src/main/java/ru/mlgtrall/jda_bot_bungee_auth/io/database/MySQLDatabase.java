@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.mlgtrall.jda_bot_bungee_auth.data.AuthPlayer;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.keys.DataColumns;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.keys.KeyHolder;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.Settings;
 import ru.mlgtrall.jda_bot_bungee_auth.util.PlayerUtil;
 
@@ -27,12 +28,12 @@ public class MySQLDatabase extends AbstractSQLDatabase {
 
     Database db;
 
-    public MySQLDatabase(Settings settings, Logger log) throws SQLException {
-        super(settings, log);
+    public MySQLDatabase(Settings settings) throws SQLException {
+        super(settings);
         DatabaseOptions options = DatabaseOptions
                 .builder()
                 .mysql(user,password, dbName, host + ":" + port)
-                .logger(log)
+                .logger(ConsoleLogger.getLogger())
                 .build();
 
         Database database = PooledDatabaseOptions
@@ -49,8 +50,7 @@ public class MySQLDatabase extends AbstractSQLDatabase {
         try {
             checkTablesAndColumns();
         } catch (SQLException e) {
-            log.warning("Fatal error! Can't initialize the MySQL database:");
-            e.printStackTrace();
+            log.exception("Fatal error! Can't initialize the MySQL database:", e);
             log.warning("Please check your database settings in settings.yml file!");
             throw e;
         }
@@ -76,7 +76,7 @@ public class MySQLDatabase extends AbstractSQLDatabase {
                         + LAST_DATE.mysql() + " VARCHAR(64), "
                         + LAST_IP.mysql() + " VARCHAR(128), "
                         + COUNTRY.mysql() + " VARCHAR(64), "
-                        + "UNIQUE("+ commaDelimited(MINE_NAME.mysql(), DISCORD_ID.mysql()) +")"
+                        + "UNIQUE("+ commaJoined(MINE_NAME.mysql(), DISCORD_ID.mysql()) +")"
                         + ") CHARACTER SET = utf8;"
         );
 
@@ -131,19 +131,19 @@ public class MySQLDatabase extends AbstractSQLDatabase {
     }
 
     @Override
-    public boolean isCached() {
-        return false;
+    public AuthPlayer getPlayer(@NotNull String name) {
+        DbRow row = getPlayerRaw(name);
+        return PlayerUtil.newPlayerFromMap(row);
     }
 
-    @Override
-    public AuthPlayer getPlayer(@NotNull String name) {
+    private DbRow getPlayerRaw(@NotNull String name){
         DbRow row = null;
         try {
             row = db.getFirstRow( "select * from "+ tableName +" where "+ MINE_NAME.mysql() +" = ?;", name);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return PlayerUtil.newPlayerFromMap(row);
+        return row;
     }
 
     @Override
@@ -170,32 +170,6 @@ public class MySQLDatabase extends AbstractSQLDatabase {
     }
 
     @Override
-    public boolean updatePlayer(@NotNull String key, @NotNull String data, @NotNull String playerName) {
-        KeyHolder validKey = DataColumns.isValidKey(key);
-        if(validKey == null){
-            return false;
-        }
-        return updatePlayer(validKey, data, playerName);
-    }
-
-    @Override
-    public boolean updatePlayer(@NotNull KeyHolder key, @NotNull String data, @NotNull String playerName) {
-        int result = 0;
-        try {
-            result = db.executeUpdate("update ? set ? = ? where ? = ?;",
-                    tableName,
-                    key.getContextualKey().toString(),
-                    data, 
-                    MINE_NAME.getContextualKey().toString(),
-                    playerName
-            );
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result != 0;
-    }
-
-    @Override
     public boolean savePlayer(@NotNull AuthPlayer player) {
         Map<KeyHolder, String> playerData = parseToMap(player);
         String wrappedKeys = wrapKeys(DataColumns.values(), ",", null, null);
@@ -203,13 +177,15 @@ public class MySQLDatabase extends AbstractSQLDatabase {
         String wrappedDataForUpdate = asStringPairedSequence(wrapMapValues(playerData, "'", "'"), "=", ",", null, null);
         Long result = null;
         try {
+            //TODO: add auto-increment to have an id?
             result = db.executeInsert("insert into " + tableName + " (" + wrappedKeys +") values(" + wrappedValues + ") " +
                             "on duplicate key update "+ wrappedDataForUpdate + ";"
             );
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return result != null;
+
+        return result != null || PlayerUtil.isEqual(getPlayerRaw(player.getName()), player);
     }
 
     @Override
@@ -248,4 +224,5 @@ public class MySQLDatabase extends AbstractSQLDatabase {
     public void reload() {
 
     }
+
 }

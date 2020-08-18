@@ -1,15 +1,19 @@
 package ru.mlgtrall.jda_bot_bungee_auth.data.login;
 
+import co.aikar.commands.Locales;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee_auth.Main;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.InjectorContainer;
 import ru.mlgtrall.jda_bot_bungee_auth.data.AuthPlayer;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.DataSource;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.jda_bot_bungee_auth.util.StringUtil;
 
 import java.net.SocketAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -19,7 +23,7 @@ public class PlayerDefiner {
 
     private final LoginSession session;
 
-    private final Logger log = Main.getInstance().getLogger();
+    private final ConsoleLogger log = ConsoleLoggerFactory.get(this.getClass());
 
     private String playerName;
     private SocketAddress address;
@@ -57,7 +61,8 @@ public class PlayerDefiner {
             players = source.getAllPlayersByIp(socketAddressToIp(address));
 
             if(players != null){
-                SimpleDateFormat format = new SimpleDateFormat();
+                SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+
                 List<Date> dates = new ArrayList<>();
 
                 for(AuthPlayer i : players){

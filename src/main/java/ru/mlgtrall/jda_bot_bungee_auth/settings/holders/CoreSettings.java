@@ -5,6 +5,7 @@ import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.Property;
 import org.jetbrains.annotations.NotNull;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.LogLevel;
 
 import java.util.List;
 
@@ -65,6 +66,21 @@ public class CoreSettings implements SettingsHolder {
                         "Used for debugging and tech works.");
             }
         }
+    }
+
+    public static class Security implements SettingsHolder{
+
+        @Comment({
+                ""
+        })
+        public static final Property<LogLevel> GLOBAL_LOG_LEVEL = newProperty(LogLevel.class, "core.global_log_level", LogLevel.INFO);
+
+        @Comment({
+                ""
+        })
+        public static final Property<Boolean> USE_FILE_LOGGING = newProperty("core.use_file_logging", true);
+
+
     }
 
 

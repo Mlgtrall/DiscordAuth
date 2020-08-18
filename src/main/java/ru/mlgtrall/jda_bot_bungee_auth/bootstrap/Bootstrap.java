@@ -1,13 +1,15 @@
 package ru.mlgtrall.jda_bot_bungee_auth.bootstrap;
 
 import ru.mlgtrall.jda_bot_bungee_auth.Main;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 
 import java.util.logging.Logger;
 
 public class Bootstrap {
 
     private static final Main pl = Main.getInstance();
-    private static final Logger logger = pl.getLogger();
+    private static final ConsoleLogger log = ConsoleLoggerFactory.get(Bootstrap.class);
 
     public static void start(){
         calculateDependencies();

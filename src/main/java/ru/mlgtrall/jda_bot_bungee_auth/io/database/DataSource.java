@@ -13,17 +13,15 @@ import java.util.List;
 //TODO: do more abstract for not only player entity + add async methods? do reloadable?
 public interface DataSource extends Reloadable {
 
-    boolean isCached();
+    default boolean isCached(){
+        return false;
+    }
 
     @Nullable AuthPlayer getPlayer(@NotNull String name);
 
     @Nullable List<AuthPlayer> getAllPlayers();
 
     @Nullable List<AuthPlayer> getAllPlayersByIp(@NotNull String ip);
-
-    boolean updatePlayer(@NotNull String key, @NotNull String data, @NotNull String playerName);
-
-    boolean updatePlayer(@NotNull KeyHolder key, @NotNull String data, @NotNull String playerName);
 
     boolean savePlayer(@NotNull AuthPlayer authPlayer);
 
@@ -34,4 +32,8 @@ public interface DataSource extends Reloadable {
     boolean containsPlayer(@NotNull String playerName);
 
     boolean containsPlayer(@NotNull KeyHolder key, @NotNull AuthPlayer player);
+
+    default void invalidateCache(String playerName){ }
+
+    default void refreshCache(String playerName){ }
 }

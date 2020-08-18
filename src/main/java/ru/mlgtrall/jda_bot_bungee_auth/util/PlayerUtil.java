@@ -7,14 +7,17 @@ import ru.mlgtrall.jda_bot_bungee_auth.Main;
 import ru.mlgtrall.jda_bot_bungee_auth.data.AuthPlayer;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.keys.DataColumns;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.keys.KeyHolder;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.jda_bot_bungee_auth.security.HashedPassword;
 
 import java.util.*;
 import java.util.logging.Logger;
 
+
 public final class PlayerUtil {
 
-    private static Logger log = Main.getInstance().getLogger();
+    private static ConsoleLogger log = ConsoleLoggerFactory.get(PlayerUtil.class);
 
     private PlayerUtil(){}
 
@@ -59,6 +62,11 @@ public final class PlayerUtil {
             }
         }
         return map;
+    }
+
+    public static boolean isEqual(DbRow row, @NotNull AuthPlayer player){
+        AuthPlayer playerFromRow = newPlayerFromMap(row);
+        return player.equals(playerFromRow);
     }
 
 

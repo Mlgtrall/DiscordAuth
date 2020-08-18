@@ -24,6 +24,8 @@ import ru.mlgtrall.jda_bot_bungee_auth.data.login.LoginState;
 import ru.mlgtrall.jda_bot_bungee_auth.data.state.SendToAddress;
 import ru.mlgtrall.jda_bot_bungee_auth.discord.DiscordBotService;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.DataSource;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.Settings;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.holders.CoreSettings;
 import ru.mlgtrall.jda_bot_bungee_auth.util.BungeeChatConfig;
@@ -41,11 +43,10 @@ import static ru.mlgtrall.jda_bot_bungee_auth.util.StringUtil.socketAddressToIp;
 
 public class PlayerListener implements Listener {
 
-    @Inject
-    private Main pl;
+    private final ConsoleLogger log = ConsoleLoggerFactory.get(this.getClass());
 
     @Inject
-    private Logger log;
+    private Main pl;
 
     @Inject
     private TaskScheduler scheduler;
@@ -185,6 +186,7 @@ public class PlayerListener implements Listener {
         SocketAddress addr = p.getSocketAddress();
 
         LoginSession session = sessionPool.getSession(addr);
+        if(session == null) return;
         LoginState state = session.getState();
         AuthPlayer authPlayer = session.getAuthPlayer();
 
@@ -223,6 +225,7 @@ public class PlayerListener implements Listener {
         SocketAddress addr = p.getSocketAddress();
 
         LoginSession session = sessionPool.getSession(addr);
+        if(session == null) return;
         LoginState state = session.getState();
 
         String name = p.getName();

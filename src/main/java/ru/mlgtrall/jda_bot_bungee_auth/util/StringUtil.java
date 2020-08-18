@@ -11,7 +11,7 @@ public final class StringUtil {
 
     private StringUtil(){}
 
-    public static @NotNull String commaDelimited(@NotNull String... params){
+    public static @NotNull String commaJoined(@NotNull String... params){
         return wrapStringArray(params, ",", null, null);
     }
 

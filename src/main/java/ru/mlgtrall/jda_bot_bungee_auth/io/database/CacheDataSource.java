@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import ru.mlgtrall.jda_bot_bungee_auth.Main;
 import ru.mlgtrall.jda_bot_bungee_auth.data.AuthPlayer;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.keys.KeyHolder;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -32,7 +34,7 @@ public class CacheDataSource implements DataSource{
     @Getter
     private final DataSource source;
 
-    private static final Logger log = Main.getInstance().getLogger();
+    private final ConsoleLogger log = ConsoleLoggerFactory.get(this.getClass());
 
     public CacheDataSource(@NotNull DataSource source){
         this.source = source;
@@ -53,7 +55,7 @@ public class CacheDataSource implements DataSource{
         cache = CacheBuilder.newBuilder()
                 .refreshAfterWrite(5, TimeUnit.MINUTES)
                 .expireAfterAccess(15, TimeUnit.MINUTES)
-                .build(new CacheLoader<String, Optional<AuthPlayer>>() {
+                .build(new CacheLoader<String, Optional<AuthPlayer>>(){
                     @Override
                     public Optional<AuthPlayer> load(@NotNull String key){
                         return Optional.ofNullable(source.getPlayer(key));
@@ -61,6 +63,7 @@ public class CacheDataSource implements DataSource{
 
                     @Override
                     public ListenableFuture<Optional<AuthPlayer>> reload(@NotNull String key, @NotNull Optional<AuthPlayer> oldValue) throws Exception {
+                        log.info("Updating cache...");
                         return executorService.submit(() -> load(key));
                     }
                 });
@@ -94,27 +97,10 @@ public class CacheDataSource implements DataSource{
     }
 
     @Override
-    public boolean updatePlayer(@NotNull String key, @NotNull String data, @NotNull String playerName) {
-        boolean result = source.updatePlayer(key,data,playerName);
-        if(result){
-            cache.refresh(playerName);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean updatePlayer(@NotNull KeyHolder key, @NotNull String data, @NotNull String playerName) {
-        boolean result = source.updatePlayer(key, data, playerName);
-        if(result){
-            cache.refresh(playerName);
-        }
-        return result;
-    }
-
-    @Override
     public boolean savePlayer(@NotNull AuthPlayer player) {
         boolean result = source.savePlayer(player);
         if(result){
+            //TODO: replace on LoadingCache#put?
             cache.refresh(player.getName());
         }
         return result;
@@ -141,7 +127,16 @@ public class CacheDataSource implements DataSource{
 
     @Override
     public void reload() {
-//        cache.invalidateAll(); //?
         source.reload();
+    }
+
+    @Override
+    public void invalidateCache(String playerName) {
+        cache.invalidate(playerName);
+    }
+
+    @Override
+    public void refreshCache(String playerName) {
+        cache.refresh(playerName);
     }
 }

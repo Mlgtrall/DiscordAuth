@@ -1,5 +1,6 @@
 package ru.mlgtrall.jda_bot_bungee_auth.discord;
 
+import com.sun.net.httpserver.HttpServer;
 import com.tjplaysnow.discord.object.Bot;
 import com.tjplaysnow.discord.object.CommandConsoleManager;
 import com.tjplaysnow.discord.object.ThreadHandle;
@@ -11,6 +12,8 @@ import ru.mlgtrall.jda_bot_bungee_auth.Main;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.InjectorContainer;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.Reloadable;
 import ru.mlgtrall.jda_bot_bungee_auth.discord.command.AuthMeCommand;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.Settings;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.holders.DiscordSettings;
 import ru.mlgtrall.jda_bot_bungee_auth.util.Pair;
@@ -25,11 +28,10 @@ import java.util.logging.Logger;
 
 public class DiscordBotService implements Reloadable {
 
-    @Inject
-    private Main pl;
+    private final ConsoleLogger log = ConsoleLoggerFactory.get(this.getClass());
 
     @Inject
-    private Logger log;
+    private Main pl;
 
     @Inject
     private Settings settings;
@@ -119,7 +121,8 @@ public class DiscordBotService implements Reloadable {
         Objects.requireNonNull(token, "Discord bot's token can't be null.");
 
         log.info("Starting discord bot...");
-        Bot bot = new Bot(token, prefix);
+        //TODO: replace " " in prefix with normal command system like aikar.comands
+        Bot bot = new Bot(token, prefix + " ");
         log.info("Bot has started with prefix = \"" + prefix + "\"");
 
         log.info("Registering bot thread...");

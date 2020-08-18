@@ -6,6 +6,8 @@ import ru.mlgtrall.jda_bot_bungee_auth.io.database.AbstractSQLDatabase;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.CacheDataSource;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.DataSource;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.MySQLDatabase;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.Settings;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.holders.DataSourceSettings;
 
@@ -26,8 +28,7 @@ public class DataSourceProvider implements Provider<DataSource> {
     @Inject
     private Settings settings;
 
-    @Inject
-    private Logger log;
+    private final ConsoleLogger log = ConsoleLoggerFactory.get(this.getClass());
 
     //TODO: final?
     private DataSource currentSource;
@@ -43,7 +44,7 @@ public class DataSourceProvider implements Provider<DataSource> {
         if(dataSource.trim().equalsIgnoreCase("mysql")){
             try {
                 try {
-                    providers.put(MySQLDatabase.class, new MySQLDatabase(settings, log));
+                    providers.put(MySQLDatabase.class, new MySQLDatabase(settings));
                 } catch (SQLException e) {
                     log.warning("Could not create data source:");
                     e.printStackTrace();

@@ -1,7 +1,6 @@
 package ru.mlgtrall.jda_bot_bungee_auth.bungee.command;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
@@ -9,12 +8,12 @@ import ru.mlgtrall.jda_bot_bungee_auth.Main;
 import ru.mlgtrall.jda_bot_bungee_auth.data.AuthPlayer;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.DataSource;
 import ru.mlgtrall.jda_bot_bungee_auth.security.HashedPassword;
+import ru.mlgtrall.jda_bot_bungee_auth.security.Password;
 import ru.mlgtrall.jda_bot_bungee_auth.util.*;
 import ru.mlgtrall.jda_bot_bungee_auth.security.Hash;
 
 import javax.inject.Inject;
 import java.util.Date;
-import java.util.UUID;
 
 import static ru.mlgtrall.jda_bot_bungee_auth.util.BungeeCommandUtil.isPlayer;
 import static ru.mlgtrall.jda_bot_bungee_auth.util.StringUtil.socketAddressToIp;
@@ -48,7 +47,7 @@ public class RegisterCommand extends Command {
 
         //TODO: complete more advanced state checking + move to another class
         if(authPlayer.getDiscordID() != null && authPlayer.getHashedPassword().isComplete()){
-            player.sendMessage();BungeeChatConfig.fromConfig("already_reg", true);
+            player.sendMessage(BungeeChatConfig.fromConfig("already_reg", true));
             return;
         }else if(authPlayer.getDiscordID() == null) {
             player.sendMessage(BungeeChatConfig.fromConfig("need_auth", true));
@@ -69,8 +68,11 @@ public class RegisterCommand extends Command {
             return;
         }
 
-        String password = PasswordUtil.checkIfValid(args[0], player);
-        if(password == null) return;
+        String password = Password.returnIfValid(args[0], player);
+        if(password == null){
+            TitleManager.send(player, BungeeChatConfig.fromConfigRaw("title_reg"));
+            return;
+        }
 
         String salt = Hash.createSaltStr();
         String hash = Hash.generateHash(password, salt);

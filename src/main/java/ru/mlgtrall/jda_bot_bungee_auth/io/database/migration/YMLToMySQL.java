@@ -28,7 +28,8 @@ public class YMLToMySQL {
         DataSource db = InjectorContainer.get().getSingleton(DataSource.class);
         List<AuthPlayer> players = getAllPlayers(config);
         for (AuthPlayer player : players){
-            scheduler.runAsync(pl,() -> db.savePlayer(player));
+            if(db.getPlayer(player.getName()) == null)
+                scheduler.runAsync(pl,() -> db.savePlayer(player));
         }
     }
 

@@ -10,6 +10,8 @@ import ru.mlgtrall.jda_bot_bungee_auth.Main;
 import ru.mlgtrall.jda_bot_bungee_auth.data.AuthPlayer;
 import ru.mlgtrall.jda_bot_bungee_auth.discord.DiscordBotService;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.DataSource;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.jda_bot_bungee_auth.util.DiscordConfig;
 
 import javax.inject.Inject;
@@ -23,11 +25,10 @@ import java.util.logging.Logger;
 
 public class AuthMeCommand extends ProgramCommand {
 
-    @Inject
-    private Main pl;
+    private final ConsoleLogger log = ConsoleLoggerFactory.get(this.getClass());
 
     @Inject
-    private Logger log;
+    private Main pl;
 
     @Inject
     private DiscordBotService botService;
@@ -88,10 +89,12 @@ public class AuthMeCommand extends ProgramCommand {
             return false;
         }
 
-        Date now = new Date(System.currentTimeMillis());
+        Date now = new Date();
         AuthPlayer player = AuthPlayer.builder().name(playerName).regDate(now.toString()).build();
 
-        scheduler.runAsync(pl, () -> db.savePlayer(player));
+        scheduler.runAsync(pl, () -> {
+            db.savePlayer(player);
+        });
 
         HashMap<String, Integer> nameTaskIdList = pl.getNameTaskIdMap();
 

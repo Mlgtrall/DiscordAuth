@@ -2,33 +2,35 @@ package ru.mlgtrall.jda_bot_bungee_auth;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import co.aikar.commands.BungeeCommandManager;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
-import ru.mlgtrall.jda_bot_bungee_auth.annotation.BungeeConfig;
 import ru.mlgtrall.jda_bot_bungee_auth.annotation.DataFolder;
+import ru.mlgtrall.jda_bot_bungee_auth.annotation.LogFolder;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.InjectorContainer;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.SettingsProvider;
 import ru.mlgtrall.jda_bot_bungee_auth.bungee.command.AuthCommand;
+import ru.mlgtrall.jda_bot_bungee_auth.bungee.command.BungeeCommands;
 import ru.mlgtrall.jda_bot_bungee_auth.bungee.command.LoginCommand;
 import ru.mlgtrall.jda_bot_bungee_auth.bungee.command.RegisterCommand;
 import ru.mlgtrall.jda_bot_bungee_auth.bungee.listener.*;
 import ru.mlgtrall.jda_bot_bungee_auth.data.login.LoginSessionPool;
-import ru.mlgtrall.jda_bot_bungee_auth.data.login.LoginState;
 import ru.mlgtrall.jda_bot_bungee_auth.io.FileLoader;
 import ru.mlgtrall.jda_bot_bungee_auth.discord.DiscordBotService;
 import net.md_5.bungee.api.plugin.Plugin;
 import ru.mlgtrall.jda_bot_bungee_auth.io.database.DataSource;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.DataSourceProvider;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
+import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.Settings;
 import ru.mlgtrall.jda_bot_bungee_auth.settings.holders.CoreSettings;
+import ru.mlgtrall.jda_bot_bungee_auth.util.FileUtil;
 
-import javax.annotation.CheckForNull;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -45,6 +47,13 @@ public final class Main extends Plugin {
 
     private Injector injector;
 
+    private ConsoleLogger log;
+
+    @Getter
+    private BungeeCommandManager commandManager;
+
+    private TaskScheduler scheduler;
+
 
     //TODO: move maps but i don't know where
     @Getter
@@ -54,7 +63,11 @@ public final class Main extends Plugin {
     @Getter
     private HashMap<String,String> nameMineIdDiscordMap;
 
-    @SneakyThrows
+    /**
+     * Required constructor to load plugin.
+     */
+    public Main(){}
+
     @Override
     public void onEnable() {
         setInstance(this);
@@ -74,15 +87,15 @@ public final class Main extends Plugin {
         getLogger().info("plugin disabled! | By Mlgtrall");
     }
 
-    private void build() throws Exception{
+    private void build(){
         getLogger().info("Initializing...");
 
         configureInjector();
 
         if(!settings.getProperty(CoreSettings.ENABLED)){
-            getLogger().info("Stopping plugin because plugin disabled in config...");
+            log.info("Stopping plugin because plugin disabled in config...");
             getProxy().stop("Server stopped because discord auth plugin disabled in config!");
-            throw new IllegalAccessException("Server stopped because auth plugin disabled in config!");
+            log.fatal("Server stopped because auth plugin disabled in config!", new IllegalAccessException("Server stopped because auth plugin disabled in config!"));
         }
 
         nameTaskIdMap = new HashMap<>();
@@ -95,35 +108,45 @@ public final class Main extends Plugin {
         registerListeners();
         registerCommands();
 
-        getLogger().info("All done!");
-        getLogger().info("Plugin is fully operable!");
+        log.info("All done!");
+        log.info("Plugin is fully operable!");
     }
 
-    @SneakyThrows
     private void configureInjector(){
 
         //Load injector
-        injector = new InjectorBuilder().addDefaultHandlers("ru.mlgtrall.jda_bot_bungee_auth").create();
+        injector = new InjectorBuilder().addDefaultHandlers(PluginMetadata.TOP_LVL_PACKAGE_NAME).create();
         InjectorContainer.set(injector);
         injector.register(Main.class, this);
         injector.register(ProxyServer.class, this.getProxy());
         injector.register(TaskScheduler.class, this.getProxy().getScheduler());
         injector.register(Logger.class, this.getLogger());
         injector.provide(DataFolder.class, this.getDataFolder());
+        Optional<File> logFolder;
+        try {
+            logFolder = Optional.of(new File(this.getDataFolder().getCanonicalPath() + File.separator + "log"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalStateException("Unable to load log folder.");
+        }
+        logFolder.ifPresent(it -> injector.provide(LogFolder.class, it));
         injector.registerProvider(Settings.class, SettingsProvider.class);
         injector.registerProvider(DataSource.class, DataSourceProvider.class);
 
+        loadLogger(logFolder.get());
+
+        scheduler = getProxy().getScheduler();
         settings = injector.getSingleton(Settings.class);
         if(settings == null){
             throw new IllegalStateException("Settings instance from injector can't be null.");
         }
-        getLogger().info("Settings loaded!");
+        log.info("Settings loaded!");
 
         db = injector.getSingleton(DataSource.class);
         if(db == null){
             throw new IllegalStateException("DataSource instance from injector can't be null");
         }
-        getLogger().info("Data source loaded!");
+        log.info("Data source loaded!");
 
 
         //Load instances
@@ -133,14 +156,22 @@ public final class Main extends Plugin {
 
     }
 
+    private void loadLogger(File logFolder){
+        FileUtil.checkOrCreateDirQuietly(logFolder);
+        File globalLoggerFile = new File(logFolder, "global.log");
+        FileUtil.checkOrCreateFileQuietly(globalLoggerFile);
+        ConsoleLogger.init(getLogger(), globalLoggerFile);
+        log = ConsoleLoggerFactory.get(this.getClass());
+    }
+
     private void dependencies() {
-        getLogger().info("Loading dependencies...");
+        log.info("Loading dependencies...");
         if(getProxy().getPluginManager().getPlugin("LiteBans") == null){
-            getLogger().warning("LiteBans plugin not found!");
+            log.warning("LiteBans plugin not found!");
         }else{
-            getLogger().info("LiteBans plugin found. OK!");
+            log.info("LiteBans plugin found. OK!");
         }
-        getLogger().info("Loading dependencies done!");
+        log.info("Loading dependencies done!");
 
     }
 
@@ -148,27 +179,37 @@ public final class Main extends Plugin {
     }
 
     private void registerListeners(){
-        getLogger().info("Registering bungee listeners...");
+        log.info("Registering bungee listeners...");
         PluginManager pluginManager = getProxy().getPluginManager();
 
         pluginManager.registerListener(this, injector.getSingleton(PlayerListener.class));
-        getLogger().info("Registering bungee listeners done!");
+        log.info("Registering bungee listeners done!");
     }
 
     private void registerCommands(){
-        getLogger().info("Registering bungee commands...");
+        log.info("Registering bungee commands...");
+        PluginManager pluginManager = getProxy().getPluginManager();
+
+        commandManager = new BungeeCommandManager(this);
+
+        commandManager.registerCommand(injector.getSingleton(BungeeCommands.ChangePasswordCommand.class));
+        //commandManager.registerCommand(injector.getSingleton(BungeeCommands.PluginCommands.class));
+
+
+
+        //LuckPerms perms = LuckPermsProvider.get();
 
         //Registering commands bungee
-        getProxy().getPluginManager().registerCommand(this, injector.getSingleton(AuthCommand.class));
-        getProxy().getPluginManager().registerCommand(this, injector.getSingleton(RegisterCommand.class));
-        getProxy().getPluginManager().registerCommand(this, injector.getSingleton(LoginCommand.class));
-        getLogger().info("Registering bungee commands done!");
+        pluginManager.registerCommand(this, injector.getSingleton(AuthCommand.class));
+        pluginManager.registerCommand(this, injector.getSingleton(RegisterCommand.class));
+        pluginManager.registerCommand(this, injector.getSingleton(LoginCommand.class));
+        log.info("Registering bungee commands done!");
     }
 
     private void registerServices() {
-        getLogger().info("Registering service instances...");
+        log.info("Registering service instances...");
 
-        getLogger().info("Registering service instances done!");
+        log.info("Registering service instances done!");
     }
 
     public static Main getInstance() {

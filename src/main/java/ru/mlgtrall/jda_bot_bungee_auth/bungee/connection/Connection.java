@@ -10,22 +10,19 @@ import ru.mlgtrall.jda_bot_bungee_auth.Servers;
 import ru.mlgtrall.jda_bot_bungee_auth.util.BungeeChatConfig;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Connection {
 
-    private static Main pl = Main.getInstance();
+    private static final Main pl = Main.getInstance();
 
-    public Connection(){
-        pl = Main.getInstance();
-        pl.getLogger().info("Registering connection instance...");
-        playerTriesMap = new HashMap<>();
-        pl.getLogger().info("Registering connection instance done!");
-    }
+   private Connection(){}
 
-    private static HashMap<UUID, Integer> playerTriesMap;
+    private static final Map<UUID, Integer> playerTriesMap = new ConcurrentHashMap<>();
 
     /**
      * DO NOT USE THIS WHILE PLAYER LOGGING IN!
