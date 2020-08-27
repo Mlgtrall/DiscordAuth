@@ -41,6 +41,13 @@ repositories {
     maven{
         url = "https://hub.spigotmc.org/nexus/content/groups/public/"
     }
+    maven{
+        name = "exceptionflug"
+        url = "https://mvn.exceptionflug.de/repository/exceptionflug-public/"
+    }
+//    maven{
+//        url = "https://jitpack.io"
+//    }
 }
 
 compileJava{
@@ -67,7 +74,7 @@ test {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-    compileOnly 'net.md-5:bungeecord-api:1.15-SNAPSHOT'
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.4-SNAPSHOT'
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
     compile group: 'ch.jalu', name: 'configme', version: '1.1.0'
     compile files('F:\\java\\jda_bot_bungee_2\\local/Discord_Bot_API_-_V3.0.jar')
@@ -76,6 +83,9 @@ dependencies {
     compile group: 'ch.jalu', name: 'injector', version: '1.0'
     compile group: "co.aikar", name: "acf-bungee", version: "0.5.0-SNAPSHOT"
     compile group: "net.luckperms", name: "api", version: "5.1"
+    compile group: "de.exceptionflug", name: "protocolize-api", version: "1.6.2-SNAPSHOT"
+    compile group: "de.exceptionflug", name: "protocolize-inventory", version: "1.6.2-SNAPSHOT"
+    compile files("F:\\java\\jda_bot_bungee_2\\local/LiteBansAPI.jar")
 
 }
 
