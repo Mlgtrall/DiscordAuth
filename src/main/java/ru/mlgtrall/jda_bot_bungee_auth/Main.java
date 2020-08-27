@@ -3,14 +3,19 @@ package ru.mlgtrall.jda_bot_bungee_auth;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import co.aikar.commands.BungeeCommandManager;
+import litebans.api.Database;
+import litebans.api.Events;
 import lombok.Getter;
+import net.luckperms.api.LuckPerms;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
+import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee_auth.annotation.DataFolder;
 import ru.mlgtrall.jda_bot_bungee_auth.annotation.LogFolder;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.InjectorContainer;
 import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.SettingsProvider;
+import ru.mlgtrall.jda_bot_bungee_auth.bootstrap.dependency.Dependencies;
 import ru.mlgtrall.jda_bot_bungee_auth.bungee.command.AuthCommand;
 import ru.mlgtrall.jda_bot_bungee_auth.bungee.command.BungeeCommands;
 import ru.mlgtrall.jda_bot_bungee_auth.bungee.command.LoginCommand;
@@ -30,7 +35,6 @@ import ru.mlgtrall.jda_bot_bungee_auth.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -70,6 +74,9 @@ public final class Main extends Plugin {
 
     @Override
     public void onEnable() {
+        if(getInstance() != null){
+            throw new IllegalStateException("Plugin already initialized!");
+        }
         setInstance(this);
         getLogger().info("Plugin enabled! | by Mlgtrall");
 
@@ -156,23 +163,22 @@ public final class Main extends Plugin {
 
     }
 
-    private void loadLogger(File logFolder){
-        FileUtil.checkOrCreateDirQuietly(logFolder);
+    private void loadLogger(@NotNull File logFolder){
+        logFolder.mkdir();
         File globalLoggerFile = new File(logFolder, "global.log");
-        FileUtil.checkOrCreateFileQuietly(globalLoggerFile);
+        try {
+            globalLoggerFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ConsoleLogger.init(getLogger(), globalLoggerFile);
         log = ConsoleLoggerFactory.get(this.getClass());
     }
 
     private void dependencies() {
         log.info("Loading dependencies...");
-        if(getProxy().getPluginManager().getPlugin("LiteBans") == null){
-            log.warning("LiteBans plugin not found!");
-        }else{
-            log.info("LiteBans plugin found. OK!");
-        }
+        Dependencies.checkAll();
         log.info("Loading dependencies done!");
-
     }
 
     public static void main(String[] args) {
@@ -191,13 +197,8 @@ public final class Main extends Plugin {
         PluginManager pluginManager = getProxy().getPluginManager();
 
         commandManager = new BungeeCommandManager(this);
-
         commandManager.registerCommand(injector.getSingleton(BungeeCommands.ChangePasswordCommand.class));
         //commandManager.registerCommand(injector.getSingleton(BungeeCommands.PluginCommands.class));
-
-
-
-        //LuckPerms perms = LuckPermsProvider.get();
 
         //Registering commands bungee
         pluginManager.registerCommand(this, injector.getSingleton(AuthCommand.class));
