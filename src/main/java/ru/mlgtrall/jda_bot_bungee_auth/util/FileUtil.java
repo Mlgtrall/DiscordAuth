@@ -1,11 +1,14 @@
 package ru.mlgtrall.jda_bot_bungee_auth.util;
 
+import com.google.common.io.ByteStreams;
+import net.md_5.bungee.api.plugin.Plugin;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLogger;
 import ru.mlgtrall.jda_bot_bungee_auth.io.log.ConsoleLoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 
@@ -13,24 +16,41 @@ public final class FileUtil {
 
     private static final ConsoleLogger log = ConsoleLoggerFactory.get(FileUtil.class);
 
-    /**
-     * Creates the given file or throws an exception.
-     *
-     * @param file the file to create
-     */
-    public static void create(@NotNull File file) {
-        try {
-            boolean result = file.createNewFile();
-            if (!result) {
-                log.exception("Could not create file: '" + file + "'", new IllegalStateException("Could not create file: '" + file + "'") );
+    @Contract("_, _, _ -> param2")
+    @SuppressWarnings("all")
+    public static @NotNull File loadResource(@NotNull Plugin plugin, @NotNull File resourceFile, @NotNull String resource){
+        if(!resourceFile.exists()){
+            try {
+                resourceFile.createNewFile();
+                try(InputStream in = plugin.getResourceAsStream(resource);
+                    OutputStream out = new FileOutputStream(resourceFile)){
+                    ByteStreams.copy(in, out);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            //TODO: ?
-            throw new IllegalStateException("Error while creating file '" + file + "'", e);
         }
+        return resourceFile;
     }
 
-    public static void checkOrCreateDir(@NotNull File dir){
+    @SuppressWarnings("all")
+    public static @Nullable File getResourceAsFile(@NotNull Plugin plugin, @NotNull String resource){
+        File tempResourceFile = null;
+        try {
+            String prefix = resource.split("\\.")[0];
+            String suffix = resource.split("\\.")[1];
+            tempResourceFile = File.createTempFile(prefix, suffix);
+            try(InputStream in = plugin.getResourceAsStream(resource);
+                OutputStream out = new FileOutputStream(tempResourceFile)){
+                ByteStreams.copy(in, out);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tempResourceFile;
+    }
+
+    public static void createDirIfNotExists(@NotNull File dir){
         if(!dir.exists()){
             if(!dir.isDirectory()){
                 Exception e = new IllegalArgumentException("This is not a directory");
@@ -46,16 +66,8 @@ public final class FileUtil {
         }
     }
 
-    public static void checkOrCreateDirQuietly(@NotNull File dir){
-        dir.mkdir();
-//        try {
-//            Files.createDirectory(dir.toPath(), (FileAttribute<?>) null);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
 
-    public static void checkOrCreateFile(@NotNull File file){
+    public static void createFileIfNotExists(@NotNull File file){
         if(!file.exists()){
             if(!file.isFile()){
                 log.exception("Provided file was not an actual file.", new IllegalArgumentException("This is not a file."));
@@ -74,11 +86,4 @@ public final class FileUtil {
         }
     }
 
-    public static void checkOrCreateFileQuietly(@NotNull File file){
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -6,12 +6,9 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.jda_bot_bungee_auth.Main;
-import ru.mlgtrall.jda_bot_bungee_auth.annotation.DataFolder;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import static ru.mlgtrall.jda_bot_bungee_auth.util.FileUtil.*;
 
@@ -48,9 +45,9 @@ public class YMLConfigFile implements ConfigFile {
 
 
     public void load(){
-        checkOrCreateDir(dataFolder);
+        createDirIfNotExists(dataFolder);
         try {
-            checkOrCreateFile(file);
+            createFileIfNotExists(file);
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
 
         }catch (IOException e){

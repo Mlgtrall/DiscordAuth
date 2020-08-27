@@ -1,11 +1,14 @@
 package ru.mlgtrall.jda_bot_bungee_auth.data;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a cache of authorized online players
  */
+@EqualsAndHashCode
 public class AuthedPlayers {
 
     /**
@@ -24,7 +27,6 @@ public class AuthedPlayers {
         cache.remove(name);
     }
 
-
     public boolean isAuthed(String name){
         return cache.containsKey(name);
     }
@@ -40,5 +42,7 @@ public class AuthedPlayers {
     public Map<String, AuthPlayer> getCache(){
         return this.cache;
     }
+
+
 
 }

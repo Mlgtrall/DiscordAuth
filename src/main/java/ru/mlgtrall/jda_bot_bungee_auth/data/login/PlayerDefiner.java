@@ -61,6 +61,7 @@ public class PlayerDefiner {
             players = source.getAllPlayersByIp(socketAddressToIp(address));
 
             if(players != null){
+                //TODO: figure out how to better use it actually
                 SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 
                 List<Date> dates = new ArrayList<>();
