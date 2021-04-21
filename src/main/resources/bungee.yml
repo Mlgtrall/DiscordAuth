@@ -1,5 +1,7 @@
 name: AnnaRegistrator_bungee
 version: @version@
-main: ru.mlgtrall.jda_bot_bungee_auth.Main
+main: ru.mlgtrall.jda_bot_bungee_auth.DiscordAuth
+depends:
+  - LuckPerms
 softdepends:
   - LiteBans
