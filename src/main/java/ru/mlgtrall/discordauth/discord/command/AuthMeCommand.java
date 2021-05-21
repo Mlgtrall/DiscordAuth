@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class AuthMeCommand extends ProgramCommand {
@@ -92,7 +93,7 @@ public class AuthMeCommand extends ProgramCommand {
             db.savePlayer(player);
         });
 
-        HashMap<String, Integer> nameTaskIdList = pl.getNameTaskIdMap();
+        ConcurrentHashMap<String, Integer> nameTaskIdList = pl.getNameTaskIdMap();
 
         //Schedule deleting player from db if he will not join minecraft before delayed amount of time
         int taskId = scheduler.schedule(pl, () -> {

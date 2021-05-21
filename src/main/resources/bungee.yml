@@ -1,6 +1,6 @@
-name: AnnaRegistrator_bungee
+name: DiscordAuth
 version: @version@
-main: ru.mlgtrall.jda_bot_bungee_auth.DiscordAuth
+main: ru.mlgtrall.discordauth.DiscordAuth
 depends:
   - LuckPerms
 softdepends:

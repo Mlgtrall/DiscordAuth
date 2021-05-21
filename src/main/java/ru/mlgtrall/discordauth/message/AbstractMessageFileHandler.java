@@ -48,7 +48,7 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
         final String language = getLanguage();
         final String filename = createFilePath(language);
         File messagesFile = initFile(filename);
-        configFile = fileLoader.getConfigFile();//TODO:???????
+        configFile = fileLoader.getConfigFile(ConfigFileTemplates.MESSAGES_EN); //TODO:???????
     }
 
     protected String getLanguage(){

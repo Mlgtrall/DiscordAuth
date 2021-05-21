@@ -34,6 +34,7 @@ import ru.mlgtrall.discordauth.util.TitleManager;
 import javax.inject.Inject;
 import java.net.SocketAddress;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import static ru.mlgtrall.discordauth.util.StringUtils.socketAddressToIp;
@@ -139,7 +140,7 @@ public class PlayerListener implements Listener {
             return;
 
         //Cancel deleting from db that was scheduled in discord auth command.
-        HashMap<String, Integer> nameTaskIdMap = pl.getNameTaskIdMap();
+        ConcurrentHashMap<String, Integer> nameTaskIdMap = pl.getNameTaskIdMap();
 
         if(nameTaskIdMap.containsKey(playerName)) {
             int taskid = nameTaskIdMap.get(playerName);

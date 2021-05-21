@@ -166,7 +166,6 @@ public enum LoginState {
     //FIXME: not working properly. Why?
     private SendToAddress defineDestinationTarget(){
         try {
-            if(this == null) throw new NullPointerException();
             switch (this) {
                 case VERIFIED:
                     return SendToAddress.TARGET_SERVER;

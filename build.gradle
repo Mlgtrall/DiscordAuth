@@ -15,7 +15,7 @@ plugins{
     id 'io.franzbecker.gradle-lombok' version '1.14'
 }
 
-mainClassName = 'ru.mlgtrall.jda_bot_bungee_auth.DiscordAuth'
+mainClassName = 'ru.mlgtrall.discordauth.DiscordAuth'
 
 compileJava.options.encoding = "UTF-8";
 
@@ -74,7 +74,7 @@ test {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-    compileOnly 'net.md-5:bungeecord-api:1.16-R0.4-SNAPSHOT'
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
     compile group: 'ch.jalu', name: 'configme', version: '1.1.0'
@@ -100,9 +100,9 @@ processResources {
 }
 
 shadowJar{
-    relocate 'co.aikar.idb', 'ru.mlgtrall.jda_bot_bungee_auth.idb'
-    relocate 'co.aikar.commands', 'ru.mlgtrall.jda_bot_bungee_auth.acf'
-    relocate 'co.aikar.locales', 'ru.mlgtrall.jda_bot_bungee_auth.locales'
+    relocate 'co.aikar.idb', 'ru.mlgtrall.discordauth.idb'
+    relocate 'co.aikar.commands', 'ru.mlgtrall.discordauth.acf'
+    relocate 'co.aikar.locales', 'ru.mlgtrall.discordauth.locales'
 }
 
 build.dependsOn shadowJar
