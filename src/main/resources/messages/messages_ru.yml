@@ -1,0 +1,54 @@
+connection:
+  trying_to_connect: ''
+  can_not_connect: ''
+  trying_to_connect_again: ''
+  server_offline: ''
+
+kick:
+  tries_limit: ''
+  failed_to_connect: ''
+  quit_discord: ''
+  role_reason: ''
+  not_in_whitelist: ''
+  timeout: ''
+  unknown_reason: ''
+
+title:
+  login_command: ''
+  reg_command: ''
+  authme_command: ''
+  wrong_password: ''
+  welcome_message: ''
+
+commands:
+  authme:
+    require_verification: ''
+    wrong_args: ''
+    already_authed: ''
+    not_in_list: ''
+    wrong_verification_code: ''
+    not_linked_with_discord: ''
+    done: ''
+    direct_player_to_reg_command: ''
+
+  reg:
+    need_auth: ''
+    already_registered: ''
+    wrong_args: ''
+    passwords_not_equal: ''
+    password_too_long: ''
+    password_too_small: ''
+    password_incorrect_char: ''
+    done: ''
+
+  login:
+    need_reg: ''
+    already_logged: ''
+    require_login: ''
+    wrong_args: ''
+    wrong_password: ''
+    done: ''
+    remembered_by_ip: ''
+
+other:
+  do_not_have_right_to_text_while_not_logged: ''

@@ -1,15 +1,21 @@
 package ru.mlgtrall.discordauth.bungee.command;
 
+import ch.jalu.injector.Injector;
 import co.aikar.commands.*;
+import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
+import ru.mlgtrall.discordauth.bootstrap.InjectorContainer;
 import ru.mlgtrall.discordauth.bootstrap.Reloadable;
 import ru.mlgtrall.discordauth.data.AuthPlayer;
 import ru.mlgtrall.discordauth.data.AuthedPlayers;
 import ru.mlgtrall.discordauth.io.database.DataSource;
 import ru.mlgtrall.discordauth.io.database.keys.DataColumns;
+import ru.mlgtrall.discordauth.io.log.ConsoleLogger;
+import ru.mlgtrall.discordauth.io.log.ConsoleLoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -19,11 +25,17 @@ import java.util.stream.Stream;
 
 public class ACFCommandManager implements Reloadable {
 
+    private final ConsoleLogger log = ConsoleLoggerFactory.get(ACFCommandManager.class);
+
+    @Inject
+    private Plugin pl;
+
     @Inject
     private ProxyServer proxy;
 
+    @Getter
     @Inject
-    private BungeeCommandManager acfManager;
+    private BungeeCommandManager bungeeCommandManager;
 
     @Inject
     private DataSource db;
@@ -45,7 +57,7 @@ public class ACFCommandManager implements Reloadable {
      */
     private void registerCommandCompletions(){
 
-        final CommandCompletions<BungeeCommandCompletionContext> completions = acfManager.getCommandCompletions();
+        final CommandCompletions<BungeeCommandCompletionContext> completions = bungeeCommandManager.getCommandCompletions();
 
         completions.registerAsyncCompletion("datacolumns", handler ->
                 Stream.of(DataColumns.values())
@@ -94,7 +106,7 @@ public class ACFCommandManager implements Reloadable {
 
     private void registerCommandContexts(){
 
-        final CommandContexts<BungeeCommandExecutionContext> contexts = acfManager.getCommandContexts();
+        final CommandContexts<BungeeCommandExecutionContext> contexts = bungeeCommandManager.getCommandContexts();
 
         contexts.registerContext(AuthPlayer.class, c -> {
             CommandSender sender = c.getSender();
@@ -110,8 +122,18 @@ public class ACFCommandManager implements Reloadable {
 
     private void registerAllCommands(){
         final PluginManager pluginManager = proxy.getPluginManager();
+        final Injector injector = InjectorContainer.get();
 
+        bungeeCommandManager.registerCommand(injector.getSingleton(BungeeCommands.ChangePasswordCommand.class));
+        bungeeCommandManager.registerCommand(injector.getSingleton(BungeeCommands.PluginCommands.class));
 
+        //Registering commands bungee
+        pluginManager.registerCommand(pl, injector.getSingleton(AuthCommand.class));
+        pluginManager.registerCommand(pl, injector.getSingleton(RegisterCommand.class));
+        pluginManager.registerCommand(pl, injector.getSingleton(LoginCommand.class));
+        log.info("Registering bungee commands done!");
+        log.debug("Registered commands:");
+        bungeeCommandManager.getRegisteredRootCommands().forEach(it -> log.debug(it.getCommandName()));
 
     }
 

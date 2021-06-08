@@ -29,7 +29,7 @@ public class SettingsProvider implements Provider<Settings> {
         File settingsFile = new File(dataFolder, "settings.yml");
         if(!settingsFile.exists()){
             try {
-                Files.createFile(settingsFile.toPath(), (FileAttribute<?>) null);
+                Files.createFile(settingsFile.toPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }

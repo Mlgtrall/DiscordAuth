@@ -10,6 +10,7 @@ import net.md_5.bungee.api.scheduler.TaskScheduler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.discordauth.DiscordAuth;
 import ru.mlgtrall.discordauth.PluginMetadata;
+import ru.mlgtrall.discordauth.ServersList;
 import ru.mlgtrall.discordauth.annotation.DataFolder;
 import ru.mlgtrall.discordauth.annotation.LogFolder;
 import ru.mlgtrall.discordauth.bootstrap.dependency.Dependencies;
@@ -35,7 +36,7 @@ public final class Bootstrap{
     //private static Bootstrap instance;
 
     private final DiscordAuth pl = DiscordAuth.getInstance();
-    private ConsoleLogger log = ConsoleLoggerFactory.get(Bootstrap.class);
+    private ConsoleLogger log;
 
     private Injector injector;
     private TaskScheduler scheduler;
@@ -48,17 +49,17 @@ public final class Bootstrap{
 
     public void start(){
 
-        log.info("Starting initialization: ");
+        pl.getLogger().info("Starting initialization: ");
 
         configureInjector();
 
         if(!settings.getProperty(CoreSettings.ENABLED)){
             log.info("Stopping plugin because it is disabled in config...");
 
-            pl.getProxy().stop("Server stopped because discord auth plugin disabled in config!");
+            pl.getProxy().stop("TargetServer stopped because discord auth plugin disabled in config!");
 
-            log.fatal("Server stopped because auth plugin disabled in config!",
-                    new IllegalAccessException("Server stopped because auth plugin disabled in config!"));
+            log.fatal("TargetServer stopped because auth plugin disabled in config!",
+                    new IllegalAccessException("TargetServer stopped because auth plugin disabled in config!"));
         }
 
 
@@ -81,8 +82,10 @@ public final class Bootstrap{
         injector.register(Logger.class, pl.getLogger());
         injector.provide(DataFolder.class, pl.getDataFolder());
 
+        //load logs
         Optional<File> logFolder = Optional.of(new File(pl.getDataFolder() + File.separator + "log"));
         logFolder.ifPresent(it -> injector.provide(LogFolder.class, it));
+        //register injection providers
         injector.registerProvider(Settings.class, SettingsProvider.class);
         injector.registerProvider(DataSource.class, DataSourceProvider.class);
 
@@ -106,6 +109,7 @@ public final class Bootstrap{
         botService = injector.getSingleton(DiscordBotService.class);
         injector.getSingleton(FileLoader.class);
         injector.getSingleton(LoginSessionPool.class);
+        injector.getSingleton(ServersList.class);
 
     }
 
@@ -137,14 +141,7 @@ public final class Bootstrap{
         //Load settings
         injector.getSingleton(ACFCommandManager.class);
 
-        commandManager.registerCommand(injector.getSingleton(BungeeCommands.ChangePasswordCommand.class));
-        commandManager.registerCommand(injector.getSingleton(BungeeCommands.PluginCommands.class));
 
-        //Registering commands bungee
-        pluginManager.registerCommand(pl, injector.getSingleton(AuthCommand.class));
-        pluginManager.registerCommand(pl, injector.getSingleton(RegisterCommand.class));
-        pluginManager.registerCommand(pl, injector.getSingleton(LoginCommand.class));
-        log.info("Registering bungee commands done!");
     }
 
     private void registerListeners(){
@@ -157,7 +154,7 @@ public final class Bootstrap{
 
 
     private void loadGlobalLogger(@NotNull File logFolder){
-        logFolder.mkdir();
+        logFolder.mkdirs();
 
         File globalLoggerFile = new File(logFolder, "global.log");
         try {

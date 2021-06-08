@@ -28,6 +28,7 @@ public class MySQLDatabase extends AbstractSQLDatabase {
 
     Database db;
 
+    //TODO: database doesn't creates automatically
     public MySQLDatabase(Settings settings) throws SQLException {
         super(settings);
         DatabaseOptions options = DatabaseOptions
@@ -46,6 +47,7 @@ public class MySQLDatabase extends AbstractSQLDatabase {
                         put("allowPublicKeyRetrieval", true);
                     }}).createHikariDatabase();
         DB.setGlobalDatabase(database);
+
         this.db = database;
         try {
             checkTablesAndColumns();

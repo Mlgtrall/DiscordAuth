@@ -59,14 +59,16 @@ public final class FileLoader implements Reloadable {
     }
 
     private void loadConfigsFromTemplates(ConfigFileTemplates... fileTemplates){
+
         if(fileTemplates == null || fileTemplates.length == 0) return;
+
         for(ConfigFileTemplates template : fileTemplates){
             if(template == null) { throw new NullPointerException("File template is null.");}
 
             if(template.getFile() != null){
                 configFiles.put(template.getFile().getName(), new YMLConfigFile(template.getFile()));
             } else{
-                log.exception(new IllegalStateException("Error in loading template \\\"\" + template.name() + \"\\\"!"));
+                log.exception(new IllegalStateException("Error in loading template " + template.name() + "!"));
             }
         }
     }

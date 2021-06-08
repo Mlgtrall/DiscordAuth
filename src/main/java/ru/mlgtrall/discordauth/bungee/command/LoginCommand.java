@@ -6,6 +6,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import ru.mlgtrall.discordauth.DiscordAuth;
+import ru.mlgtrall.discordauth.ServersList;
 import ru.mlgtrall.discordauth.bungee.connection.Connection;
 import ru.mlgtrall.discordauth.data.AuthPlayer;
 import ru.mlgtrall.discordauth.data.AuthedPlayers;
@@ -17,7 +18,6 @@ import ru.mlgtrall.discordauth.util.TitleManager;
 import javax.inject.Inject;
 import java.util.Date;
 
-import static ru.mlgtrall.discordauth.Servers.isAuthorizedServer;
 import static ru.mlgtrall.discordauth.util.BungeeCommandUtils.isPlayer;
 import static ru.mlgtrall.discordauth.util.StringUtils.socketAddressToIp;
 
@@ -35,6 +35,9 @@ public class LoginCommand extends Command {
     @Inject
     private TaskScheduler scheduler;
 
+    @Inject
+    private ServersList serversList;
+
     public LoginCommand() {
         super("login", "discordauth.login", "l");
     }
@@ -47,7 +50,7 @@ public class LoginCommand extends Command {
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
         ServerInfo serverInfo = player.getServer().getInfo();
-        if(!isAuthorizedServer(serverInfo.getName())){
+        if(!serversList.isAuthorizedServer(serverInfo.getName())){
             return;
         }
 

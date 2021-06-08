@@ -6,7 +6,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.discordauth.DiscordAuth;
-import ru.mlgtrall.discordauth.Servers;
+import ru.mlgtrall.discordauth.ServersList;
 import ru.mlgtrall.discordauth.util.BungeeChatConfig;
 
 import java.util.Map;
@@ -55,7 +55,7 @@ public class Connection {
     }
 
     public static void tryConnect(@NotNull ProxiedPlayer player) {
-        tryConnect(player, Servers.WHITELIST.getName());
+        tryConnect(player, ServersList.WHITELIST.getName());
     }
 
     private static void check(@NotNull ProxiedPlayer player, String toServerByName) {

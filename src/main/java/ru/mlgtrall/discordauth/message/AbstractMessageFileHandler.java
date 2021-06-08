@@ -1,6 +1,7 @@
 package ru.mlgtrall.discordauth.message;
 
 import lombok.Getter;
+import net.md_5.bungee.config.YamlConfiguration;
 import ru.mlgtrall.discordauth.annotation.DataFolder;
 import ru.mlgtrall.discordauth.bootstrap.Reloadable;
 import ru.mlgtrall.discordauth.exception.NotExistingResourceException;
@@ -45,9 +46,10 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
     @PostConstruct
     @Override
     public void reload() {
-        final String language = getLanguage();
-        final String filename = createFilePath(language);
-        File messagesFile = initFile(filename);
+        final String defaultLanguage = getLanguage();
+        final String defaultFilename = createFilePath(defaultLanguage);
+        File defaultMessagesFile = initFile(defaultFilename);
+
         configFile = fileLoader.getConfigFile(ConfigFileTemplates.MESSAGES_EN); //TODO:???????
     }
 

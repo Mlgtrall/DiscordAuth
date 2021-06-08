@@ -1,6 +1,7 @@
 name: DiscordAuth
 version: @version@
 main: ru.mlgtrall.discordauth.DiscordAuth
+author: Mlgtrall
 depends:
   - LuckPerms
 softdepends:

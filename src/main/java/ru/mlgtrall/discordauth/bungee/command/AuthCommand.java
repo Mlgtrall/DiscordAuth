@@ -8,6 +8,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import ru.mlgtrall.discordauth.DiscordAuth;
+import ru.mlgtrall.discordauth.ServersList;
 import ru.mlgtrall.discordauth.bungee.connection.Connection;
 import ru.mlgtrall.discordauth.data.AuthPlayer;
 import ru.mlgtrall.discordauth.data.AuthedPlayers;
@@ -22,8 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static ru.mlgtrall.discordauth.Servers.isAuthorizedServer;
-import static ru.mlgtrall.discordauth.Servers.isLoginServer;
 import static ru.mlgtrall.discordauth.util.BungeeCommandUtils.isPlayer;
 
 public class AuthCommand extends Command {
@@ -43,6 +42,9 @@ public class AuthCommand extends Command {
     @Inject
     private TaskScheduler scheduler;
 
+    @Inject
+    private ServersList serversList;
+
 
     public AuthCommand(){
         super("authme", "discordauth.authme");
@@ -57,8 +59,8 @@ public class AuthCommand extends Command {
         ServerInfo serverInfo = player.getServer().getInfo();
 
         //Check for servers
-        if(!isAuthorizedServer(serverInfo.getName())) return;
-        if(!isLoginServer(serverInfo.getName())){
+        if(!serversList.isAuthorizedServer(serverInfo.getName())) return;
+        if(!serversList.isLoginServer(serverInfo.getName())){
             //TODO: add configurable message
             player.sendMessage(new TextComponent("Вы уже авторизованы!"));
             return;

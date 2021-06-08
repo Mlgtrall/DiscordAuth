@@ -5,13 +5,16 @@ import net.dv8tion.jda.core.entities.*;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.discordauth.DiscordAuth;
+import ru.mlgtrall.discordauth.bootstrap.Reloadable;
 import ru.mlgtrall.discordauth.data.AuthPlayer;
 import ru.mlgtrall.discordauth.service.DiscordBotService;
 import ru.mlgtrall.discordauth.io.database.DataSource;
 import ru.mlgtrall.discordauth.io.log.ConsoleLogger;
 import ru.mlgtrall.discordauth.io.log.ConsoleLoggerFactory;
+import ru.mlgtrall.discordauth.settings.Settings;
 import ru.mlgtrall.discordauth.util.DiscordConfig;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.security.SecureRandom;
 import java.util.Date;
@@ -20,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class AuthMeCommand extends ProgramCommand {
+public class AuthMeCommand extends ProgramCommand implements Reloadable {
 
     private final ConsoleLogger log = ConsoleLoggerFactory.get(this.getClass());
 
@@ -31,12 +34,22 @@ public class AuthMeCommand extends ProgramCommand {
     private DiscordBotService botService;
 
     @Inject
+    private Settings settings;
+
+    @Inject
     private DataSource db;
 
     @Inject
     private TaskScheduler scheduler;
 
+    private String description;
+
     public AuthMeCommand(){ }
+
+    @Override @PostConstruct
+    public void reload() {
+
+    }
 
     @Override
     public String getLabel() {
@@ -57,13 +70,13 @@ public class AuthMeCommand extends ProgramCommand {
     @Override
     protected boolean run(@NotNull User user, @NotNull MessageChannel channel, @NotNull Guild guild, @NotNull String label, @NotNull List<String> args) {
         if(!botService.hasListenableChannel(channel)){
-            log.info("Command was called not from listenable channel");
+            log.debug("Command was called not from listenable channel");
             return false;
         }
 
-//        log.info("Discord user " + user.getName() + " executed " + label + " command");
-//        log.info("Label = " + label);
-//        log.info("Args = " + args);
+       log.debug("Discord user " + user.getName() + " executed " + label + " command");
+       log.debug("Label = " + label);
+       log.debug("Args = " + args);
 
         Member member = guild.getMember(user);
         if(member == null) return false;
@@ -114,4 +127,6 @@ public class AuthMeCommand extends ProgramCommand {
 
         return false;
     }
+
+
 }

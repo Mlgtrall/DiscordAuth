@@ -17,7 +17,7 @@ plugins{
 
 mainClassName = 'ru.mlgtrall.discordauth.DiscordAuth'
 
-compileJava.options.encoding = "UTF-8";
+//compileJava.options.encoding = "UTF-8";
 
 tasks.withType(JavaCompile){
     options.encoding = "UTF-8"
@@ -75,17 +75,17 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
     compileOnly 'net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
-    compile group: 'ch.jalu', name: 'configme', version: '1.1.0'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
+    implementation group: 'ch.jalu', name: 'configme', version: '1.1.0'
     compileOnly files('F:\\java\\jda_bot_bungee_2\\local/Discord_Bot_API_-_V3.0.jar')
-    compile "co.aikar:idb-core:1.0.0-SNAPSHOT"
-    compile "com.zaxxer:HikariCP:2.4.1"
-    compile group: 'ch.jalu', name: 'injector', version: '1.0'
-    compile group: "co.aikar", name: "acf-bungee", version: "0.5.0-SNAPSHOT"
+    implementation "co.aikar:idb-core:1.0.0-SNAPSHOT"
+    implementation "com.zaxxer:HikariCP:2.4.1"
+    implementation group: 'ch.jalu', name: 'injector', version: '1.0'
+    implementation group: "co.aikar", name: "acf-bungee", version: "0.5.0-SNAPSHOT"
     compileOnly group: "net.luckperms", name: "api", version: "5.1"
     compileOnly group: "de.exceptionflug", name: "protocolize-api", version: "1.6.2-SNAPSHOT"
-    compile group: "de.exceptionflug", name: "protocolize-inventory", version: "1.6.2-SNAPSHOT"
+    implementation group: "de.exceptionflug", name: "protocolize-inventory", version: "1.6.2-SNAPSHOT"
     compileOnly files("F:\\java\\jda_bot_bungee_2\\local/LiteBansAPI.jar")
 
 }
@@ -98,6 +98,7 @@ processResources {
         filter ReplaceTokens, tokens: [version: version]
     }
 }
+
 
 shadowJar{
     relocate 'co.aikar.idb', 'ru.mlgtrall.discordauth.idb'

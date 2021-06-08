@@ -14,7 +14,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.discordauth.DiscordAuth;
-import ru.mlgtrall.discordauth.Servers;
+import ru.mlgtrall.discordauth.ServersList;
 import ru.mlgtrall.discordauth.bungee.connection.Connection;
 import ru.mlgtrall.discordauth.data.AuthPlayer;
 import ru.mlgtrall.discordauth.data.AuthedPlayers;
@@ -63,6 +63,9 @@ public class PlayerListener implements Listener {
 
     @Inject
     private AuthedPlayers verify;
+
+    @Inject
+    private ServersList serversList;
 
     public PlayerListener(){
     }
@@ -177,6 +180,9 @@ public class PlayerListener implements Listener {
             scheduler.runAsync(pl, () -> db.savePlayer(auth));
         }
 
+        log.debug("Player's session:");
+        log.debug(session.toString());
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -198,10 +204,12 @@ public class PlayerListener implements Listener {
         if(authPlayer == null){
             log.debug("Player " + p.toString() + " not in db. Cancelling login.");
             session.setState(LoginState.PLAYER_UNKNOWN);
-            return;
-        }
 
-        log.debug("AuthPlayer from session = " + authPlayer.toString());
+            //return;
+        }
+        else {
+            log.debug("AuthPlayer from session = " + authPlayer.toString());
+        }
 
         SendToAddress to = state.getSendTo();
         if (!to.equals(SendToAddress.KICK)) {
@@ -210,6 +218,7 @@ public class PlayerListener implements Listener {
             e.setTarget(to.getTarget().getInfo());
         }else{
             log.debug("Player was marked to kick sending to login than kick.");
+            
             e.setTarget(SendToAddress.LOGIN_SERVER.getTarget().getInfo());
         }
 
@@ -221,7 +230,7 @@ public class PlayerListener implements Listener {
 
         Server server = e.getServer();
 
-        if(!Servers.isAuthorizedServer(server)) return;
+        if(!serversList.isAuthorizedServer(server)) return;
 
 
         ProxiedPlayer p = e.getPlayer();
@@ -245,19 +254,19 @@ public class PlayerListener implements Listener {
         try {
             scheduler.schedule(pl, () -> {
 
-                if (!verify.isAuthed(name) && !servers.get(Servers.LOGIN.getName()).getPlayers().contains(p)) {
+                if (!verify.isAuthed(name) && !servers.get(ServersList.LOGIN.getName()).getPlayers().contains(p)) {
                     pl.getLogger().info("AuthPlayer is not in whitelist but on a DiscordAuth server!");
-                    Connection.tryConnect(p, Servers.LOGIN.getName());
+                    Connection.tryConnect(p, ServersList.LOGIN.getName());
                     return;
                 }
 
-                if (verify.isAuthed(name) && servers.get(Servers.LOGIN.getName()).getPlayers().contains(p)) {
+                if (verify.isAuthed(name) && servers.get(ServersList.LOGIN.getName()).getPlayers().contains(p)) {
                     pl.getLogger().info("AuthPlayer is in whitelist, but in login server!");
                     Connection.tryConnect(p);
                     return;
                 }
 
-                if (servers.get(Servers.LOGIN.getName()).getPlayers().contains(p)) {
+                if (servers.get(ServersList.LOGIN.getName()).getPlayers().contains(p)) {
                     //Login timeout
                     scheduler.schedule(pl, () -> {
                         try {
@@ -324,7 +333,7 @@ public class PlayerListener implements Listener {
 
         if(verify.isAuthed(name)) return;
 
-        if(!player.getServer().getInfo().getName().equals(Servers.LOGIN.getName())) return;
+        if(!player.getServer().getInfo().getName().equals(ServersList.LOGIN.getName())) return;
 
         UUID uuid = player.getUniqueId();
         String message = e.getMessage();

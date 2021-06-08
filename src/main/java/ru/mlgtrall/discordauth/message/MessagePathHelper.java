@@ -1,5 +1,6 @@
 package ru.mlgtrall.discordauth.message;
 
+import co.aikar.commands.Locales;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,12 @@ public final class MessagePathHelper {
         //TODO: throw error if language code is illegal
         return "messages/messages_" + languageCode + ".yml";
     }
+
+    public static @NotNull String createMessageFilePath(Locales languageCode){
+        //TODO: throw error if language code is illegal
+        return "messages/messages_" + languageCode.getDefaultLocale().toLanguageTag().toLowerCase() + ".yml";
+    }
+
 
     /**
      * Returns whether the given file name is a messages file.

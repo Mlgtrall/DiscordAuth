@@ -13,10 +13,8 @@ import java.io.*;
  * localFolderPath - folder where file will be contained (starting from .../plugin/)
  */
 @ToString
-public enum ConfigFileTemplates { // TODO: refactor and move PathBuilder somewhere else
-    BUNGEE_CHAT("config.yml"),
-    DISCORD_CHAT("JDAconfig.yml"),
-    PLAYER_DB_YML("players.yml"),
+public enum ConfigFileTemplates {
+
     PLUGIN_SETTINGS("settings.yml"),
     PLUGIN_BUNGEE_YML("bungee.yml"){
         {
@@ -25,7 +23,9 @@ public enum ConfigFileTemplates { // TODO: refactor and move PathBuilder somewhe
         }
     },
     MESSAGES_EN(null,"messages_en.yml", "messages/"),
-    MESSAGES_RU(null,"messages_ru.yml", "messages/");
+    MESSAGES_RU(null,"messages_ru.yml", "messages/"),
+    DISCORD_MESSAGES_EN(null, "discord_messages_en.yml", "messages/")
+    ;
 
     protected final File dataFolder = DiscordAuth.getInstance().getDataFolder();
 

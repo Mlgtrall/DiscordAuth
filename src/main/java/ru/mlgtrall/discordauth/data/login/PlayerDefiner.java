@@ -107,6 +107,7 @@ public class PlayerDefiner {
         }else{
             log.debug("Player retrieved from db: null");
             session.setPlayerDefined(false);
+            session.setState(LoginState.PLAYER_UNKNOWN);
         }
 
         return session;

@@ -1,17 +1,19 @@
 package ru.mlgtrall.discordauth.data.state;
 
 import lombok.Getter;
-import ru.mlgtrall.discordauth.Servers;
+import lombok.ToString;
+import ru.mlgtrall.discordauth.ServersList;
+
 
 public enum SendToAddress {
-    LOGIN_SERVER(Servers.LOGIN),
-    TARGET_SERVER(Servers.WHITELIST),
+    LOGIN_SERVER(ServersList.LOGIN),
+    TARGET_SERVER(ServersList.WHITELIST),
     KICK(null);
 
     @Getter
-    private final Servers target;
+    private final ServersList.TargetServer target;
 
-    SendToAddress(Servers server){
+    SendToAddress(ServersList.TargetServer server){
         this.target = server;
     }
 

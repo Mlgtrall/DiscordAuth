@@ -61,7 +61,7 @@ public class DiscordSettings implements SettingsHolder{
                 "List of required roles by their current name in discord guild",
                 "Not recommended to use. Better to use role's id to avoid routine if role's name needs to be changed."
         })
-        public static final Property<List<String>> BY_NAME = newListProperty("discord.role.required.by_name", "-some-role-name-1-", " -some-role-name-n-" );
+        public static final Property<List<String>> BY_NAME = newListProperty("discord.role.required.by_name", "-some-role-name-1-", "-some-role-name-n-" );
 
         @Comment("List of required roles by their id in discord guild. Always better to use this, instead of names.")
         public static final Property<List<String>> BY_ID = newListProperty("discord.role.required.by_id", "-some-role-id-1-", "-some-role-id-n-");
@@ -70,6 +70,15 @@ public class DiscordSettings implements SettingsHolder{
         public void registerComments(@NotNull CommentsConfiguration conf) {
             conf.setComment("discord.role.required",
                     "This section is responsible for setting your guild's roles that will be required for players to join this server.");
+        }
+    }
+
+    public static class Commands implements SettingsHolder{
+
+        public static class AuthMe implements SettingsHolder{
+
+            public static final Property<String> DESCRIPTION = newProperty("discord.commands.authme.descriprion", "");
+
         }
     }
 

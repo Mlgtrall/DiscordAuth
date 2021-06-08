@@ -4,6 +4,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import ru.mlgtrall.discordauth.DiscordAuth;
+import ru.mlgtrall.discordauth.bungee.command.ACFCommandManager;
 
 public final class BungeeCommandUtils {
     public static final DiscordAuth plugin = DiscordAuth.getInstance();
@@ -17,4 +18,5 @@ public final class BungeeCommandUtils {
         }
         return true;
     }
+
 }

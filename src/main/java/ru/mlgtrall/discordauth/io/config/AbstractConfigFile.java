@@ -2,10 +2,11 @@ package ru.mlgtrall.discordauth.io.config;
 
 import lombok.Getter;
 import ru.mlgtrall.discordauth.DiscordAuth;
+import ru.mlgtrall.discordauth.bootstrap.Reloadable;
 
 import java.io.File;
 
-public abstract class AbstractConfigFile implements ConfigFile{
+public abstract class AbstractConfigFile implements ConfigFile, Reloadable {
 
     protected static final File dataFolder = DiscordAuth.getInstance().getDataFolder();
 

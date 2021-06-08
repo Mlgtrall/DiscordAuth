@@ -16,6 +16,7 @@ import ru.mlgtrall.discordauth.io.log.ConsoleLogger;
 import ru.mlgtrall.discordauth.io.log.ConsoleLoggerFactory;
 import ru.mlgtrall.discordauth.settings.Settings;
 import ru.mlgtrall.discordauth.settings.holders.DiscordSettings;
+import ru.mlgtrall.discordauth.util.NumberUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -54,11 +55,11 @@ public class DiscordBotService implements Reloadable {
     @PostConstruct
     @Override
     public void reload() {
-        listenableChannelSettings();
-        requiredRolesSettings();
+        retrieveListenableChannelFromSettings();
+        retrieveRequiredRolesFromSettings();
     }
 
-    private void listenableChannelSettings(){
+    private void retrieveListenableChannelFromSettings(){
 
         listenableChannelsIds = new ArrayList<>();
         listenableChannelsNames = new ArrayList<>();
@@ -71,7 +72,7 @@ public class DiscordBotService implements Reloadable {
 
     }
 
-    private void requiredRolesSettings(){
+    private void retrieveRequiredRolesFromSettings(){
 
         requiredRolesIds = new ArrayList<>();
         requiredRolesNames = new ArrayList<>();
@@ -137,22 +138,34 @@ public class DiscordBotService implements Reloadable {
         log.info("Done!");
 
         AtomicReference<Guild> relevantGuild = new AtomicReference<>();
+
         //Discord gives a wealthy guild object after about a 1 sec
+        //TODO: figure out why 1 second isn't enough sometimes
         scheduler.schedule(pl, () -> {
             relevantGuild.set(bot.getBot().getGuilds().get(0));
             this.bot = DiscordBot.builder().tjBot(bot).relevantGuild(relevantGuild.get()).build();
 
-            bot.setGame("Minecraft | MCFP");
+            bot.setGame("Minecraft"); //TODO: make configurable
 
             Guild guild = this.bot.getRelevantGuild();
             //Collecting channel entities from guild with ids and names
             Set<MessageChannel> channels = new HashSet<>();
+
+            //Searching channels by id
             for(String id:listenableChannelsIds){
-                MessageChannel channel = guild.getTextChannelById(id);
-                if(channel!=null){
-                    channels.add(channel);
-                }
+
+                if(!NumberUtils.isNumeric(id)) continue;
+
+                try {
+                    MessageChannel channel = guild.getTextChannelById(id);
+                    if (channel != null) {
+                        channels.add(channel);
+                    }
+                }catch (Exception ignored){}
+
+
             }
+            //Searching channels by name
             for(String name:listenableChannelsNames){
                 List<TextChannel> channelsWithSameName = guild.getTextChannelsByName(name, false);
                 for(MessageChannel channel : channelsWithSameName){
@@ -164,12 +177,20 @@ public class DiscordBotService implements Reloadable {
 
             //Collecting role entities from guild with ids and names
             Set<Role> roles = new HashSet<>();
+
+            //Searching roles by id
             for(String id:requiredRolesIds){
-                Role role = guild.getRoleById(id);
-                if(role != null){
-                    roles.add(role);
-                }
+
+                if(!NumberUtils.isNumeric(id)) continue;
+
+                try {
+                    Role role = guild.getRoleById(id);
+                    if (role != null) {
+                        roles.add(role);
+                    }
+                }catch (Exception ignored){}
             }
+            //Searching roles by name
             for(String name: requiredRolesNames){
                 List<Role> rolesWithSameName = guild.getRolesByName(name, false);
                 for(Role role: rolesWithSameName){
@@ -179,22 +200,34 @@ public class DiscordBotService implements Reloadable {
                 }
             }
 
-            log.info("Bot is listening channels:");
             int i = 1;
-            for(MessageChannel channel : channels){
-                log.info(i++ + ". Name: \"" + channel.getName() + "\"; Id: \"" + channel.getId()+"\"");
-            }
-            log.info("User required to have one of this roles:");
-            i = 1;
-            for(Role role : roles){
-                log.info(i++ + ". Name: \"" + role.getName() + "\"; Id: \"" + role.getId()+"\"");
+            if(channels.isEmpty()){
+                log.info("Bot not listening any channel.");
+            }else {
 
+                log.info("Bot is listening channels:");
+                for (MessageChannel channel : channels) {
+                    log.info(i++ + ". Name: \"" + channel.getName() + "\"; Id: \"" + channel.getId() + "\"");
+                }
             }
 
+            if(roles.isEmpty()){
+                log.info("Bot haven't found any roles to require.");
+            }else {
+
+                log.info("User required to have one of this roles:");
+                i = 1;
+                for (Role role : roles) {
+                    log.info(i++ + ". Name: \"" + role.getName() + "\"; Id: \"" + role.getId() + "\"");
+
+                }
+            }
 
             log.info("Assembling discord bot done!");
-            }, 1, TimeUnit.SECONDS);
+
+            }, 2, TimeUnit.SECONDS);
     }
+
 
     public boolean hasListenableChannel(@NotNull MessageChannel channel){
         return listenableChannelsIds.contains(channel.getId()) || listenableChannelsNames.contains(channel.getName());

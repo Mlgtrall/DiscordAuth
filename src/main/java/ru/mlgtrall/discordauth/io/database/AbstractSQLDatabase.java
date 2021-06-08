@@ -22,7 +22,7 @@ public abstract class AbstractSQLDatabase implements DataSource {
 
     protected String port;
 
-    //TODO: do more abstract
+    //TODO: do more abstract?
     protected AbstractSQLDatabase(@NotNull Settings settings){
         this.user = settings.getProperty(DataSourceSettings.MySQL.USER);
         this.password = settings.getProperty(DataSourceSettings.MySQL.PASSWORD);
@@ -30,6 +30,7 @@ public abstract class AbstractSQLDatabase implements DataSource {
         this.tableName = settings.getProperty(DataSourceSettings.MySQL.TABLE);
         this.host = settings.getProperty(DataSourceSettings.MySQL.HOST);
         this.port = String.valueOf(settings.getProperty(DataSourceSettings.MySQL.PORT));
+
 
     }
 }

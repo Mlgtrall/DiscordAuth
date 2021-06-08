@@ -15,6 +15,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import org.jetbrains.annotations.NotNull;
 import ru.mlgtrall.discordauth.DiscordAuth;
+import ru.mlgtrall.discordauth.ServersList;
 import ru.mlgtrall.discordauth.bungee.connection.Connection;
 import ru.mlgtrall.discordauth.data.AuthPlayer;
 import ru.mlgtrall.discordauth.data.AuthedPlayers;
@@ -37,8 +38,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static ru.mlgtrall.discordauth.Servers.isAuthorizedServer;
-import static ru.mlgtrall.discordauth.Servers.isLoginServer;
+
 
 public class BungeeCommands {
 
@@ -55,6 +55,7 @@ public class BungeeCommands {
 
     @Inject
     private DiscordAuth pl;
+
 
     public static class RegistrationCommands extends BaseCommand{
 
@@ -73,14 +74,17 @@ public class BungeeCommands {
         @Inject
         private DataSource db;
 
+        @Inject
+        private ServersList serversList;
+
         @CommandAlias("authme")
         @CommandPermission("discordauth.authme")
         public void onAuthMe(@NotNull ProxiedPlayer player, AuthPlayer authPlayer, String[] args){
             ServerInfo serverInfo = player.getServer().getInfo();
 
             //Check for servers
-            if(!isAuthorizedServer(serverInfo.getName())) return;
-            if(!isLoginServer(serverInfo.getName())){
+            if(!serversList.isAuthorizedServer(serverInfo.getName())) return;
+            if(!serversList.isLoginServer(serverInfo.getName())){
                 //TODO: add configurable message
                 player.sendMessage(new TextComponent("Вы уже авторизованы!"));
                 return;
